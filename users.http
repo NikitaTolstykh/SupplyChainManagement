@@ -1,0 +1,5 @@
+### POST re
+GET https://examples.http-client.intellij.net/get
+    ?generated-in=IntelliJ IDEA
+
+###
