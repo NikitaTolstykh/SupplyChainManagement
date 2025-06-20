@@ -5,6 +5,7 @@ import com.delivery.entity.User;
 import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.JwtUtil;
+import com.delivery.util.RoleValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +15,15 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RoleValidator roleValidator;
 
-    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder
+            , JwtUtil jwtUtil, RoleValidator roleValidator) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.roleValidator = roleValidator;
     }
 
     @Override
@@ -27,6 +31,9 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.findUserByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already Registered");
         }
+
+        roleValidator.validateRegistrationRole(userDto.getRole());
+
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         User savedUser = userRepository.save(userMapper.userToEntity(userDto));
