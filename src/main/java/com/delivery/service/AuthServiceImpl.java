@@ -1,5 +1,6 @@
 package com.delivery.service;
 
+import com.delivery.dto.AuthResponse;
 import com.delivery.dto.UserDto;
 import com.delivery.entity.User;
 import com.delivery.mapper.UserMapper;
@@ -27,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String register(UserDto userDto) {
+    public AuthResponse register(UserDto userDto) {
         if (userRepository.findUserByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already Registered");
         }
@@ -37,19 +38,21 @@ public class AuthServiceImpl implements AuthService {
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         User savedUser = userRepository.save(userMapper.userToEntity(userDto));
+        String token = jwtUtil.generateToken(savedUser.getEmail());
 
-        return jwtUtil.generateToken(savedUser.getEmail());
+        return new AuthResponse(token, "Bearer");
     }
 
     @Override
-    public String login(String email, String password) {
+    public AuthResponse login(String email, String password) {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User with this email does not exist"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
+        String token = jwtUtil.generateToken(user.getEmail());
 
-        return jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(token, "Bearer");
     }
 }

@@ -1,8 +1,11 @@
 package com.delivery.controller;
 
+import com.delivery.dto.AuthResponse;
+import com.delivery.dto.LoginRequest;
 import com.delivery.dto.UserDto;
 import com.delivery.service.AuthServiceImpl;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,12 +18,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@Valid @RequestBody UserDto userDto) {
-        return authService.register(userDto);
+    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserDto userDto) {
+        return ResponseEntity.status(201).body(authService.register(userDto));
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam String email, @RequestParam String password) {
-        return authService.login(email, password);
+    public ResponseEntity<AuthResponse> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authService.login(loginRequest.getEmail(), loginRequest.getPassword()));
     }
 }
