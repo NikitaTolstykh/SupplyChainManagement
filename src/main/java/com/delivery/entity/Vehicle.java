@@ -23,7 +23,7 @@ public class Vehicle {
     @Column(nullable = false)
     private String color;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, name = "license_plate")
     private String licensePlate;
 
     private String comment;
