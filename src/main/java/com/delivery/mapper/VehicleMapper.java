@@ -9,10 +9,10 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface VehicleMapper {
-    @Mapping(source = "user.id", target = "driverId")
+    @Mapping(source = "driver.id", target = "driverId")
     VehicleDto vehicleToDto(Vehicle vehicle);
 
-    @Mapping(target = "user", source = "user")
+    @Mapping(target = "driver", ignore = true)
     Vehicle vehicleToEntity(VehicleDto vehicleDto);
 
     List<VehicleDto> vehicleListDto(List<Vehicle> vehicleListEntity);
