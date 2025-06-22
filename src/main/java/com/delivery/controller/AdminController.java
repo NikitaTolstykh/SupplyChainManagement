@@ -1,7 +1,10 @@
 package com.delivery.controller;
 
+import com.delivery.dto.UserResponseDto;
 import com.delivery.dto.VehicleDto;
+import com.delivery.service.AdminService;
 import com.delivery.service.VehicleService;
+import com.delivery.util.Role;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +15,31 @@ import java.util.List;
 @RequestMapping("/api/admin")
 public class AdminController {
     private final VehicleService vehicleService;
+    private final AdminService adminService;
 
-    public AdminController(VehicleService vehicleService) {
+    public AdminController(VehicleService vehicleService, AdminService adminService) {
         this.vehicleService = vehicleService;
+        this.adminService = adminService;
+    }
+
+    // === WORKERS MANAGEMENT ===
+    @GetMapping("/workers")
+    public ResponseEntity<List<UserResponseDto>> getAllWorkers() {
+        return ResponseEntity.ok(adminService.getAllWorkers());
+    }
+
+    @GetMapping("/workers/role/{role}")
+    public ResponseEntity<List<UserResponseDto>> getAllWorkersByRole(@PathVariable Role role) {
+        return ResponseEntity.ok(adminService.getAllWorkersByRole(role));
+    }
+
+    @GetMapping("/workers/search")
+    public ResponseEntity<List<UserResponseDto>> searchWorkers(@RequestParam String query) {
+        return ResponseEntity.ok(adminService.searchWorkers(query));
+    }
+    @GetMapping("/workers/{id}")
+    public ResponseEntity<UserResponseDto> getWorker(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getWorker(id));
     }
 
     // === CARS MANAGEMENT ====
