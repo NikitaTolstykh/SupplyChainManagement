@@ -1,5 +1,6 @@
 package com.delivery.controller;
 
+import com.delivery.dto.UserRequestDto;
 import com.delivery.dto.UserResponseDto;
 import com.delivery.dto.VehicleDto;
 import com.delivery.service.AdminService;
@@ -37,9 +38,27 @@ public class AdminController {
     public ResponseEntity<List<UserResponseDto>> searchWorkers(@RequestParam String query) {
         return ResponseEntity.ok(adminService.searchWorkers(query));
     }
+
     @GetMapping("/workers/{id}")
     public ResponseEntity<UserResponseDto> getWorker(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getWorker(id));
+    }
+
+    @PostMapping("/workers")
+    public ResponseEntity<UserResponseDto> addWorker(@Valid @RequestParam UserRequestDto userDto) {
+        UserResponseDto createdWorked = adminService.addWorker(userDto);
+        return ResponseEntity.status(201).body(createdWorked);
+    }
+
+    @PutMapping("/workers/{id}")
+    public ResponseEntity<UserResponseDto> editWorker(@PathVariable Long id, @Valid @RequestBody UserRequestDto userDto) {
+        return ResponseEntity.ok(adminService.editWorker(id, userDto));
+    }
+
+    @DeleteMapping("/workers/{id}")
+    public ResponseEntity<Void> deleteWorker(@PathVariable Long id) {
+        adminService.deleteWorker(id);
+        return ResponseEntity.noContent().build();
     }
 
     // === CARS MANAGEMENT ====
