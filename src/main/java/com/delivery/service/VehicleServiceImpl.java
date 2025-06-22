@@ -86,11 +86,8 @@ public class VehicleServiceImpl implements VehicleService {
         User driver = userRepository.findById(id)
                 .orElseThrow(() -> new DriverNotFoundException("Driver with id " + id + " not found"));
 
-        try {
-            roleValidator.validateDriverRole(driver.getRole());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidDriverRoleException("User with id " + id + " is not a driver");
-        }
+        roleValidator.validateDriverRole(driver.getRole());
+
         return driver;
     }
 
