@@ -2,7 +2,7 @@ package com.delivery.controller;
 
 import com.delivery.dto.AuthResponse;
 import com.delivery.dto.LoginRequest;
-import com.delivery.dto.UserDto;
+import com.delivery.dto.UserRequestDto;
 import com.delivery.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserRequestDto userDto) {
         return ResponseEntity.status(201).body(authService.register(userDto));
     }
 

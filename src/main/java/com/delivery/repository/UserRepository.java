@@ -5,7 +5,6 @@ import com.delivery.util.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByRoleIn(List<Role> roles);
     boolean existsByEmail(String email);
+    List<User> findAllByRole(Role role);
+    List<User> findAllByRoleInAndFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+            List<Role> roles, String firstName, String email);
+
 }
