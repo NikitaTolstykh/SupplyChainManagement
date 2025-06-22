@@ -10,4 +10,10 @@ public class RoleValidator {
             throw new RoleNotAllowedException("Only CLIENT users can register");
         }
     }
+
+    public void validateDriverRole(Role role) {
+        if (role != Role.DRIVER) {
+            throw new IllegalArgumentException("Assigned user must be a DRIVER");
+        }
+    }
 }
