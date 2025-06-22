@@ -37,6 +37,24 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
+    public List<UserResponseDto> getAllWorkersByRole(Role role) {
+        return userMapper.userListToResponseDto(userRepository.findAllByRole(role));
+    }
+
+    @Override
+    @Transactional
+    public List<UserResponseDto> searchWorkers(String query) {
+        return userMapper.userListToResponseDto(
+                userRepository.findAllByRoleInAndFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                        List.of(Role.DRIVER, Role.DISPATCHER),
+                        query,
+                        query
+                )
+        );
+    }
+
+    @Override
+    @Transactional
     public UserResponseDto getWorker(Long id) {
         User worker = findUserById(id);
         return userMapper.userToResponseDto(worker);
