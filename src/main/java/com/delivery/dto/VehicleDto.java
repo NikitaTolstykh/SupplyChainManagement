@@ -3,6 +3,7 @@ package com.delivery.dto;
 import com.delivery.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,6 @@ public class VehicleDto {
 
     private String comment;
 
-    @NotBlank(message = "car must have a driver(user_id)")
+    @NotNull(message = "car must have a driver(user_id)")
     private Long driverId;
 }

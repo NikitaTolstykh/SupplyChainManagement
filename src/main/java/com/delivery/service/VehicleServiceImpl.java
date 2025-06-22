@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@Transactional
+
 public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepository;
     private final VehicleMapper vehicleMapper;
@@ -63,7 +63,7 @@ public class VehicleServiceImpl implements VehicleService {
     public VehicleDto editVehicle(Long id, VehicleDto vehicleDto) {
         Vehicle existingVehicle = findVehicleById(id);
 
-        validateLicensePLateForUpdate(existingVehicle, vehicleDto.getLicensePlate());
+        validateLicensePlateForUpdate(existingVehicle, vehicleDto.getLicensePlate());
         updateDriverIfChanged(existingVehicle, vehicleDto.getDriverId());
         updateVehicleFields(existingVehicle, vehicleDto);
 
@@ -74,10 +74,7 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public void deleteVehicle(Long id) {
-        Vehicle vehicleForDelete = findVehicleById(id);
-        if (vehicleForDelete != null) {
-            vehicleRepository.delete(vehicleForDelete);
-        }
+        vehicleRepository.delete(findVehicleById(id));
     }
 
     private Vehicle findVehicleById(Long id) {
@@ -103,7 +100,7 @@ public class VehicleServiceImpl implements VehicleService {
         }
     }
 
-    private void validateLicensePLateForUpdate(Vehicle existingVehicle, String licensePlate) {
+    private void validateLicensePlateForUpdate(Vehicle existingVehicle, String licensePlate) {
         if (!existingVehicle.getLicensePlate().equals(licensePlate)) {
             validateLicensePlateUniqueness(licensePlate);
         }
