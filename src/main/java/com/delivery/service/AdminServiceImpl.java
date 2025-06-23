@@ -8,6 +8,7 @@ import com.delivery.exception.WorkerNotFoundException;
 import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.Role;
+import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,14 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final RoleValidator roleValidator;
 
-    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                            UserMapper userMapper, RoleValidator roleValidator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.roleValidator = roleValidator;
     }
 
     @Override
@@ -38,6 +42,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public List<UserResponseDto> getAllWorkersByRole(Role role) {
+        roleValidator.validateRolesForAdmin(role);
         return userMapper.userListToResponseDto(userRepository.findAllByRole(role));
     }
 
@@ -63,6 +68,8 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public UserResponseDto addWorker(UserRequestDto userDto) {
+        roleValidator.validateRolesForAdmin(userDto.getRole());
+
         validateIfEmailExists(userDto.getEmail());
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
@@ -74,6 +81,8 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     public UserResponseDto editWorker(Long id, UserRequestDto userDto) {
         User workerToEdit = findUserById(id);
+        roleValidator.validateRolesForAdmin(userDto.getRole());
+
         validateEmailForUpdate(workerToEdit, userDto.getEmail());
 
         updateWorkerData(workerToEdit, userDto);

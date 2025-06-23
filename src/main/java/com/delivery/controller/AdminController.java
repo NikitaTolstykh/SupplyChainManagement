@@ -45,7 +45,7 @@ public class AdminController {
     }
 
     @PostMapping("/workers")
-    public ResponseEntity<UserResponseDto> addWorker(@Valid @RequestParam UserRequestDto userDto) {
+    public ResponseEntity<UserResponseDto> addWorker(@Valid @RequestBody UserRequestDto userDto) {
         UserResponseDto createdWorked = adminService.addWorker(userDto);
         return ResponseEntity.status(201).body(createdWorked);
     }

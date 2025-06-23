@@ -17,4 +17,10 @@ public class RoleValidator {
             throw new InvalidDriverRoleException("Assigned user must be a DRIVER");
         }
     }
+
+    public void validateRolesForAdmin(Role role) {
+        if (role != Role.DRIVER && role != Role.DISPATCHER) {
+            throw new RoleNotAllowedException("Admin can have access only to workers");
+        }
+    }
 }
