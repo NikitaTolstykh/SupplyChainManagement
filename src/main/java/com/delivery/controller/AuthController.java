@@ -2,23 +2,26 @@ package com.delivery.controller;
 
 import com.delivery.dto.AuthResponse;
 import com.delivery.dto.LoginRequest;
-import com.delivery.dto.UserDto;
-import com.delivery.service.AuthServiceImpl;
+import com.delivery.dto.UserRequestDto;
+import com.delivery.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    private final AuthServiceImpl authService;
+    private final AuthService authService;
 
-    public AuthController(AuthServiceImpl authService) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody UserRequestDto userDto) {
         return ResponseEntity.status(201).body(authService.register(userDto));
     }
 

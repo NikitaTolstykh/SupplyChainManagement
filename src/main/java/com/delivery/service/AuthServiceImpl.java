@@ -1,7 +1,7 @@
 package com.delivery.service;
 
 import com.delivery.dto.AuthResponse;
-import com.delivery.dto.UserDto;
+import com.delivery.dto.UserRequestDto;
 import com.delivery.entity.User;
 import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponse register(UserDto userDto) {
+    public AuthResponse register(UserRequestDto userDto) {
         if (userRepository.findUserByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already Registered");
         }
