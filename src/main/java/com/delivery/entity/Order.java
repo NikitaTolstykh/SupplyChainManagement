@@ -78,4 +78,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
+
+    @OneToOne(mappedBy = "order")
+    private Route route;
 }
