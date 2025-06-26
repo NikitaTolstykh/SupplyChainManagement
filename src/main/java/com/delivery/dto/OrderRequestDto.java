@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateOrderRequestDto {
-    private String pickupAddress;
+public class OrderRequestDto {
+    private String fromAddress;
     private String toAddress;
     private String cargoType;
     private String cargoDescription;
