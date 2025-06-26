@@ -1,8 +1,17 @@
 package com.delivery.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderDetailsDto {
     private Long id;
     private String fromAddress;
@@ -16,7 +25,7 @@ public class OrderDetailsDto {
     private LocalDateTime pickupTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
+    private String paymentMethod;
     private RouteInfoDto routeInfoDto;
 
 }

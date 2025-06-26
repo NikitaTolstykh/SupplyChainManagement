@@ -1,6 +1,7 @@
 package com.delivery.entity;
 
 import com.delivery.util.OrderStatus;
+import com.delivery.util.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,6 +42,10 @@ public class Order {
 
     @Column(name = "price")
     private BigDecimal price;
+
+    @Column(name = "payment_method")
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
