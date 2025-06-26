@@ -17,4 +17,6 @@ public class OrderDetailsDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private RouteInfoDto routeInfoDto;
+
 }
