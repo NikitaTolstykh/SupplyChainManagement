@@ -21,6 +21,8 @@ public class OrderDetailsDto {
     private BigDecimal weightKg;
     private String comment;
     private BigDecimal price;
+    private String distanceCategory;
+    private Integer estimatedDistanceKm;
     private String status;
     private LocalDateTime pickupTime;
     private LocalDateTime createdAt;

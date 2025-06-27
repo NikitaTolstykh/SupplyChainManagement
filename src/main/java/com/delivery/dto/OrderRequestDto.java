@@ -1,5 +1,6 @@
 package com.delivery.dto;
 
+import com.delivery.util.DistanceCategory;
 import com.delivery.util.PaymentMethod;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,15 @@ public class OrderRequestDto {
     @Digits(integer = 8, fraction = 2, message = "Invalid weight format")
     private BigDecimal weightKg;
 
+
     private String comment;
+
+    @NotNull(message = "Distance category is required")
+    private DistanceCategory distanceCategory;
+
+    @Min(value = 1, message = "Distance must be at least 1 km")
+    @Max(value = 1000, message = "Distance cannot exceed 1000 km")
+    private Integer estimatedDistanceKm;
 
     @NotNull(message = "Payment method is required")
     private PaymentMethod paymentMethod;
