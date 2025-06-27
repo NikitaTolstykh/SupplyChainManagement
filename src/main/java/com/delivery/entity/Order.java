@@ -1,5 +1,6 @@
 package com.delivery.entity;
 
+import com.delivery.util.DistanceCategory;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.PaymentMethod;
 import jakarta.persistence.*;
@@ -53,6 +54,13 @@ public class Order {
 
     @Column(name = "pickup_time")
     private LocalDateTime pickupTime;
+
+    @Column(name = "distance_category")
+    @Enumerated(EnumType.STRING)
+    private DistanceCategory distanceCategory;
+
+    @Column(name = "estimated_distance_km")
+    private Integer estimatedDistanceKm;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
