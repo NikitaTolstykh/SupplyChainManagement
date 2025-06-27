@@ -26,6 +26,4 @@ public class OrderDetailsDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String paymentMethod;
-    private RouteInfoDto routeInfoDto;
-
 }

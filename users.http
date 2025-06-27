@@ -13,3 +13,4 @@ Content-Type: application/json
 
 ### GET login
 POST http://localhost:8080/api/auth/login?email=testuser@example.com&password=test1234
+

@@ -84,6 +84,4 @@ public class Order {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
-    @OneToOne(mappedBy = "order")
-    private Route route;
 }
