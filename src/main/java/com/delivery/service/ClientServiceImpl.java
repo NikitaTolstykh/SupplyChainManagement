@@ -12,6 +12,7 @@ import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -51,6 +52,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public OrderDetailsDto getOrderDetails(Long orderId, String email) {
         Order order = findOrderById(orderId);
+        emailValidation(order, email);
 
         return orderMapper.toDetailsDto(order);
     }
@@ -64,6 +66,17 @@ public class ClientServiceImpl implements ClientService {
     private Order findOrderById(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException("Order with id: " + orderId + " not found"));
+    }
+
+    private void emailValidation(Order order, String email) {
+        if (!order.getClient().getEmail().equals(email)) {
+            try {
+                throw new AccessDeniedException("You are not allowed to access this order");
+            } catch (AccessDeniedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 }
 
