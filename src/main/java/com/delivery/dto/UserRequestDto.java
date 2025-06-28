@@ -26,7 +26,7 @@ public class UserRequestDto {
     @NotBlank(message = "user must have a lastName")
     private String lastName;
 
-    @Pattern(  regexp = "^(\\+\\d{1,3})?\\d{10,15}$",
+    @Pattern(regexp = "^(\\+\\d{1,3})?\\d{10,15}$",
             message = "Phone number must me valid")
     @NotBlank(message = "user must have phone number")
     private String phone;

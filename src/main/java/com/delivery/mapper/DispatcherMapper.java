@@ -25,8 +25,8 @@ public interface DispatcherMapper {
     @Mapping(source = "vehicle.model", target = "vehicleModel")
     @Mapping(source = "vehicle.licensePlate", target = "licensePlate")
     AvailableDriverDto toAvailableDriverDto(User user);
-    List<AvailableDriverDto> toAvailableDriversDto(List<User> availableDrives);
 
+    List<AvailableDriverDto> toAvailableDriversDto(List<User> availableDrives);
 
 
 }

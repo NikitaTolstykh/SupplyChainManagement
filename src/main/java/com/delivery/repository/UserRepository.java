@@ -25,13 +25,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
             List<Role> roles, String firstName, String email);
 
     @Query("""
-        select u from User u
-        where u.role = com.delivery.util.Role.DRIVER
-        and u.id not in (
-            select o.driver.id from Order o
-            where o.status in :activeStatuses
-        )
-    """)
+                select u from User u
+                where u.role = com.delivery.util.Role.DRIVER
+                and u.id not in (
+                    select o.driver.id from Order o
+                    where o.status in :activeStatuses
+                )
+            """)
     List<User> findAvailableDrivers(@Param("activeStatuses") List<OrderStatus> activeStatuses);
 
 }
