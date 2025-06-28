@@ -2,13 +2,15 @@ package com.delivery.service;
 
 import com.delivery.dto.OrderRequestDto;
 import com.delivery.util.DistanceCategory;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class PriceCalculatorServiceImpl implements PriceCalculatorService{
+@Service
+public class PriceCalculatorServiceImpl implements PriceCalculatorService {
     private static final BigDecimal BASE_PRICE = new BigDecimal("20.00");
-    private static final BigDecimal WEIGHT_COEFFICIENT =new BigDecimal("0.5");
+    private static final BigDecimal WEIGHT_COEFFICIENT = new BigDecimal("0.5");
 
     @Override
     public BigDecimal calculatePrice(BigDecimal weightKg, DistanceCategory distanceCategory) {
