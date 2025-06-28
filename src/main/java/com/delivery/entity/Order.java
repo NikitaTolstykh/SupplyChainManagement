@@ -59,9 +59,6 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private DistanceCategory distanceCategory;
 
-    @Column(name = "estimated_distance_km")
-    private Integer estimatedDistanceKm;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

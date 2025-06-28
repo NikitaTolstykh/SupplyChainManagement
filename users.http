@@ -3,14 +3,14 @@ POST http://localhost:8080/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "testuser@example.com",
+  "email": "nikitatolstyh7@gmail.com",
   "password": "test1234",
-  "firstName": "Test",
-  "lastName": "User",
-  "phone": "+12345678901",
+  "firstName": "Nikita",
+  "lastName": "Tolstykh",
+  "phone": "+48732558254",
   "role": "CLIENT"
 }
 
 ### GET login
-POST http://localhost:8080/api/auth/login?email=testuser@example.com&password=test1234
+POST http://localhost:8080/api/auth/login?email=nikitos@gmail.com.com&password=laladgdsgsgd
 

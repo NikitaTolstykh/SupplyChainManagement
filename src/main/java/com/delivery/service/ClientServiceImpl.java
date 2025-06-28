@@ -73,7 +73,7 @@ public class ClientServiceImpl implements ClientService {
             try {
                 throw new AccessDeniedException("You are not allowed to access this order");
             } catch (AccessDeniedException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
 

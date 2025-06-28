@@ -43,10 +43,6 @@ public class OrderRequestDto {
     @NotNull(message = "Distance category is required")
     private DistanceCategory distanceCategory;
 
-    @Min(value = 1, message = "Distance must be at least 1 km")
-    @Max(value = 1000, message = "Distance cannot exceed 1000 km")
-    private Integer estimatedDistanceKm;
-
     @NotNull(message = "Payment method is required")
     private PaymentMethod paymentMethod;
 

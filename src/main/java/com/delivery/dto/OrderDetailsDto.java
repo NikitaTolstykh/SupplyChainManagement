@@ -22,7 +22,6 @@ public class OrderDetailsDto {
     private String comment;
     private BigDecimal price;
     private String distanceCategory;
-    private Integer estimatedDistanceKm;
     private String status;
     private LocalDateTime pickupTime;
     private LocalDateTime createdAt;
