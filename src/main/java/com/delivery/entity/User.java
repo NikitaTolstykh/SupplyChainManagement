@@ -34,5 +34,8 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @OneToOne(mappedBy = "driver")
+    private Vehicle vehicle;
+
 
 }
