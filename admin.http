@@ -10,7 +10,6 @@ Content-Type: application/json
 ###
 ### Получить всех работников
 GET http://localhost:8080/api/admin/workers
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
 ###
 
 ### Получить работников по роли
