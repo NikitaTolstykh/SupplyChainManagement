@@ -1,16 +1,16 @@
 package com.delivery.controller;
 
 import com.delivery.dto.OrderDetailsDto;
+import com.delivery.dto.OrderListItemDto;
 import com.delivery.dto.OrderRequestDto;
 import com.delivery.service.ClientService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/client/orders")
@@ -27,6 +27,17 @@ public class ClientController {
         return ResponseEntity.status(201).body(clientService.createOrder(dto, email));
     }
 
+    @GetMapping
+    public ResponseEntity<List<OrderListItemDto>> getClientOrders() {
+        String email = getCurrentUserEmail();
+        return ResponseEntity.ok(clientService.getClientOrders(email));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDetailsDto> getOrderDetails(@PathVariable Long id) {
+        String email = getCurrentUserEmail();
+        return ResponseEntity.ok(clientService.getOrderDetails(id, email));
+    }
 
     private String getCurrentUserEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
