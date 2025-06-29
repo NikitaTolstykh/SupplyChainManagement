@@ -35,7 +35,7 @@ public class Order {
     @Column(name = "cargo_description")
     private String cargoDescription;
 
-    @Column(name = "wieght_kg")
+    @Column(name = "weight_kg")
     private BigDecimal weightKg;
 
     @Column(name = "comment")

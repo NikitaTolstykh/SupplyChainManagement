@@ -8,8 +8,6 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    Order findByClient_Email(String clientEmail);
-
     List<Order> findAllByClient_Email(String clientEmail);
 
 }
