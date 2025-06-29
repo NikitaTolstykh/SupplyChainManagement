@@ -10,6 +10,7 @@ import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.OrderMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -31,6 +32,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public OrderDetailsDto createOrder(OrderRequestDto dto, String email) {
         User client = findUserByEmail(email);
 

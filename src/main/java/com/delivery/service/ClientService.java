@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface ClientService {
     OrderDetailsDto createOrder(OrderRequestDto dto, String email);
+
     List<OrderListItemDto> getClientOrders(String email);
+
     OrderDetailsDto getOrderDetails(Long orderId, String email);
 }

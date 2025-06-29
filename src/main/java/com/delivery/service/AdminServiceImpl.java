@@ -114,7 +114,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    private void checkPasswordBeforeEditing(User user, UserRequestDto userDto){
+    private void checkPasswordBeforeEditing(User user, UserRequestDto userDto) {
         if (userDto.getPassword() != null && !userDto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }

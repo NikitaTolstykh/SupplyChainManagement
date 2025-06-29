@@ -7,6 +7,7 @@ import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.JwtUtil;
 import com.delivery.util.RoleValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse register(UserRequestDto userDto) {
         if (userRepository.findUserByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email already Registered");
@@ -44,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public AuthResponse login(String email, String password) {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User with this email does not exist"));
