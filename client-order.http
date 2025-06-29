@@ -8,16 +8,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpb
 
 ### POST create order
 POST http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTExMzc5ODksImV4cCI6MTc1MTIyNDM4OX0.HT6cB0uwcKupomRLBcB-gsWeyQs50DiAmWDRM_XMKX8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTEyMjU2NDIsImV4cCI6MTc1MTMxMjA0Mn0.jSV6OXHnee9wjgoACX6e9KxLsKd9a5HHbG13qmZOLCo
 Content-Type: application/json
 
 {
-  "fromAddress": "ул. Гагарина, 12",
+  "fromAddress": "ул. 40л. Победы, 12",
   "toAddress": "ул.Новокузнецкая 15",
-  "cargoType": "Электроника",
-  "cargoDescription": "Ноутбуки",
-  "weightKg": 30,
-  "comment": "Осторожно, хрупкое",
+  "cargoType": "Документы",
+  "cargoDescription": "Бумаги ценные",
+  "weightKg": 5,
+  "comment": "Доставить в срочном порядке",
   "distanceCategory": "LONG",
   "paymentMethod": "CASH",
   "pickupTime": "2025-07-01T12:00:00"

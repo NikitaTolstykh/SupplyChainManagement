@@ -51,12 +51,13 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Override
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
         Order order = findOrderById(id);
-
         User driver = findAndValidateDriver(dto.getDriverId());
 
-        roleValidator.validateDriverRole(driver.getRole());
 
         order.setDriver(driver);
+
+        changeStatus(order);
+
         orderRepository.save(order);
     }
 
@@ -95,6 +96,12 @@ public class DispatcherServiceImpl implements DispatcherService {
     private Order findOrderById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("Order with id " + id + "not found"));
+    }
+
+    private void changeStatus(Order order) {
+        if (order.getStatus() == OrderStatus.CREATED) {
+            order.setStatus(OrderStatus.ASSIGNED);
+        }
     }
 
     private User findAndValidateDriver(Long driverId) {

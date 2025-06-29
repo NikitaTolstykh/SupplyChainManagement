@@ -1,0 +1,63 @@
+### Получить все заказы
+GET http://localhost:8080/api/dispatcher/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
+
+###
+
+### Получить детали заказа
+GET http://localhost:8080/api/dispatcher/orders/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
+
+###
+
+### Получить доступных водителей
+GET http://localhost:8080/api/dispatcher/available-drivers
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
+
+###
+
+### Назначить водителя на заказ
+POST http://localhost:8080/api/dispatcher/orders/3/assign-driver
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
+Content-Type: application/json
+
+{
+  "driverId": 6
+}
+
+###
+
+### Обновить статус заказа
+PATCH http://localhost:8080/api/dispatcher/orders/8/status
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
+Content-Type: application/json
+
+{
+  "status": "ASSIGNED"
+}
+
+###
+
+### Обновить всю информацию о заказе
+PUT http://localhost:8080/api/dispatcher/orders/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
+Content-Type: application/json
+
+{
+  "fromAddress": "г. Брест, ул. Карбышева, 21",
+  "toAddress": "г. Минск, пр. Независимости, 3",
+  "cargoType": "Документы",
+  "cargoDescription": "Контракт",
+  "weightKg": 0.5,
+  "comment": "Передать в руки",
+  "distanceCategory": "LONG",
+  "price": 25.00,
+  "paymentMethod": "CASH",
+  "pickupTime": "2025-07-01T14:00:00"
+}
+
+###
+
+### Удалить заказ
+DELETE http://localhost:8080/api/dispatcher/orders/9
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
