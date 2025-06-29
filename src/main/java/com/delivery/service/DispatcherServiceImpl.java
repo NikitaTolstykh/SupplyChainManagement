@@ -3,6 +3,8 @@ package com.delivery.service;
 import com.delivery.dto.*;
 import com.delivery.entity.Order;
 import com.delivery.entity.User;
+import com.delivery.exception.DriverNotFoundException;
+import com.delivery.exception.OrderNotFoundException;
 import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.OrderMapper;
 import com.delivery.repository.OrderRepository;
@@ -11,6 +13,7 @@ import com.delivery.util.OrderStatus;
 import com.delivery.util.RoleValidator;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -40,19 +43,16 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     public DispatcherOrderDetailsDto getOrderDetails(Long id) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = findOrderById(id);
 
         return dispatcherMapper.toDispatcherOrderDetailsDto(order);
     }
 
     @Override
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = findOrderById(id);
 
-        User driver = userRepository.findById(dto.getDriverId())
-                .orElseThrow(() -> new RuntimeException("Driver not found with id: " + dto.getDriverId()));
+        User driver = findAndValidateDriver(dto.getDriverId());
 
         roleValidator.validateDriverRole(driver.getRole());
 
@@ -62,8 +62,7 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = findOrderById(id);
 
         OrderStatus newStatus = dto.getStatus();
         order.setStatus(newStatus);
@@ -73,26 +72,15 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     public void updateOrderInfo(Long id, OrderRequestDto dto) {
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-
-        order.setFromAddress(dto.getFromAddress());
-        order.setToAddress(dto.getToAddress());
-        order.setCargoType(dto.getCargoType());
-        order.setCargoDescription(dto.getCargoDescription());
-        order.setWeightKg(dto.getWeightKg());
-        order.setComment(dto.getComment());
-        order.setPrice(priceCalculatorService.calculatePrice(dto.getWeightKg(), dto.getDistanceCategory()));
-        order.setPaymentMethod(dto.getPaymentMethod());
-        order.setPickupTime(dto.getPickupTime());
-
+        Order order = findOrderById(id);
+        updateOrderFields(order, dto);
         orderRepository.save(order);
     }
 
     @Override
     public void deleteOrder(Long id) {
         if (!orderRepository.existsById(id)) {
-            throw new RuntimeException("Order not found with id: " + id);
+            throw new OrderNotFoundException("Order not found with id: " + id);
         }
         orderRepository.deleteById(id);
     }
@@ -102,5 +90,31 @@ public class DispatcherServiceImpl implements DispatcherService {
         List<OrderStatus> activeStatuses = List.of(OrderStatus.ASSIGNED, OrderStatus.IN_PROGRESS);
         List<User> availableDrivers = userRepository.findAvailableDrivers(activeStatuses);
         return dispatcherMapper.toAvailableDriversDto(availableDrivers);
+    }
+
+    private Order findOrderById(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException("Order with id " + id + "not found"));
+    }
+
+    private User findAndValidateDriver(Long driverId) {
+        User driver = userRepository.findById(driverId)
+                .orElseThrow(() -> new DriverNotFoundException("Driver with id " + driverId + " not found"));
+        roleValidator.validateDriverRole(driver.getRole());
+        return driver;
+    }
+
+    private void updateOrderFields(Order order, OrderRequestDto dto) {
+        order.setFromAddress(dto.getFromAddress());
+        order.setToAddress(dto.getToAddress());
+        order.setCargoType(dto.getCargoType());
+        order.setCargoDescription(dto.getCargoDescription());
+        order.setWeightKg(dto.getWeightKg());
+        order.setComment(dto.getComment());
+        order.setPaymentMethod(dto.getPaymentMethod());
+        order.setPickupTime(dto.getPickupTime());
+
+        BigDecimal newPrice = priceCalculatorService.calculatePrice(dto.getWeightKg(), dto.getDistanceCategory());
+        order.setPrice(newPrice);
     }
 }
