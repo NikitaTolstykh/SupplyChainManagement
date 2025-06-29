@@ -11,6 +11,7 @@ import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.RoleValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -49,6 +50,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
+    @Transactional
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
         Order order = findOrderById(id);
         User driver = findAndValidateDriver(dto.getDriverId());
@@ -62,6 +64,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
+    @Transactional
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
         Order order = findOrderById(id);
 
@@ -72,6 +75,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
+    @Transactional
     public void updateOrderInfo(Long id, OrderRequestDto dto) {
         Order order = findOrderById(id);
         updateOrderFields(order, dto);
@@ -79,6 +83,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
+    @Transactional
     public void deleteOrder(Long id) {
         if (!orderRepository.existsById(id)) {
             throw new OrderNotFoundException("Order not found with id: " + id);
