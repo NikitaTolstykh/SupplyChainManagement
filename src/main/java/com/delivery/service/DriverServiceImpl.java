@@ -2,12 +2,17 @@ package com.delivery.service;
 
 import com.delivery.dto.DispatcherOrderDetailsDto;
 import com.delivery.dto.DriverOrderListItemDto;
+import com.delivery.entity.Order;
+import com.delivery.entity.User;
+import com.delivery.exception.OrderNotFoundException;
+import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.DriverMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public class DriverServiceImpl implements DriverService{
@@ -49,5 +54,24 @@ public class DriverServiceImpl implements DriverService{
     @Override
     public List<DriverOrderListItemDto> getCompletedOrders(String driverEmail) {
 
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserWithEmailNotFoundException("Driver with email: " + email + " not found"));
+    }
+
+    private Order findOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order with id: " + orderId + " not found"));
+    }
+    private void validateAccess(Order order, String email) {
+        if (order.getDriver() == null || !order.getDriver().getEmail().equals(email)) {
+            try {
+                throw new AccessDeniedException("You are not allowed to access this order");
+            } catch (AccessDeniedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
