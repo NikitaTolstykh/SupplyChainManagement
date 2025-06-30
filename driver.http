@@ -1,0 +1,5 @@
+### GET request to example server
+POST http://localhost:8080/api/driver/orders/8/complete
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTEzMTU0OTMsImV4cCI6MTc1MTQwMTg5M30.Qklt4h_WwEhakLvgvdviPL5m1lUAOppeB5_71OLSNas
+
+###
