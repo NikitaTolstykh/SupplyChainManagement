@@ -36,13 +36,19 @@ public class DriverController {
         return ResponseEntity.ok(driverService.getOrderDetails(id, driverEmail));
     }
 
-    @PostMapping ("/orders/{id}/accept")
+    @PostMapping("/orders/{id}/accept")
     public ResponseEntity<Void> acceptOrder(@PathVariable Long id) {
         String driverEmail = getCurrentUserEmail();
         driverService.acceptOrder(id, driverEmail);
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/orders/{id}/complete")
+    public ResponseEntity<Void> completeOrder(@PathVariable Long id) {
+        String driverEmail = getCurrentUserEmail();
+        driverService.completeOrder(id, driverEmail);
+        return ResponseEntity.noContent().build();
+    }
 
     public String getCurrentUserEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
