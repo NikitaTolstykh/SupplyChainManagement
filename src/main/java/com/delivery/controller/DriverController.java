@@ -5,10 +5,7 @@ import com.delivery.dto.DriverOrderListItemDto;
 import com.delivery.service.DriverService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -37,6 +34,13 @@ public class DriverController {
     public ResponseEntity<DispatcherOrderDetailsDto> getOrderDetails(@PathVariable Long id) {
         String driverEmail = getCurrentUserEmail();
         return ResponseEntity.ok(driverService.getOrderDetails(id, driverEmail));
+    }
+
+    @PostMapping ("/orders/{id}/accept")
+    public ResponseEntity<Void> acceptOrder(@PathVariable Long id) {
+        String driverEmail = getCurrentUserEmail();
+        driverService.acceptOrder(id, driverEmail);
+        return ResponseEntity.noContent().build();
     }
 
 
