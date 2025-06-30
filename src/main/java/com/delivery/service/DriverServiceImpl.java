@@ -12,10 +12,12 @@ import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.OrderStatus;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
+@Service
 public class DriverServiceImpl implements DriverService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -65,7 +67,7 @@ public class DriverServiceImpl implements DriverService {
         validateAccess(order, driverEmail);
 
         if (order.getStatus() != OrderStatus.IN_PROGRESS) {
-            throw new IllegalStateException("Order is not in IN_PROGRESS status");
+            throw new IllegalArgumentException("You are not allowed to access this order");
         }
 
         order.setStatus(OrderStatus.DELIVERED);
