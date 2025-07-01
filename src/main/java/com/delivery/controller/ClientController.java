@@ -1,9 +1,8 @@
 package com.delivery.controller;
 
-import com.delivery.dto.OrderDetailsDto;
-import com.delivery.dto.OrderListItemDto;
-import com.delivery.dto.OrderRequestDto;
+import com.delivery.dto.*;
 import com.delivery.service.ClientService;
+import com.delivery.service.OrderRatingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
@@ -16,10 +15,14 @@ import java.util.List;
 @RequestMapping("api/client/orders")
 public class ClientController {
     private final ClientService clientService;
+    private final OrderRatingService orderRatingService;
 
-    public ClientController(ClientService clientService) {
+    public ClientController(ClientService clientService, OrderRatingService orderRatingService) {
         this.clientService = clientService;
+        this.orderRatingService = orderRatingService;
     }
+
+    // === Order MANAGEMENT ====
 
     @PostMapping
     public ResponseEntity<OrderDetailsDto> createOrder(@Valid @RequestBody OrderRequestDto dto) {
@@ -38,6 +41,14 @@ public class ClientController {
         String email = getCurrentUserEmail();
         return ResponseEntity.ok(clientService.getOrderDetails(id, email));
     }
+
+    // === RATE Order MANAGEMENT ====
+    @PostMapping("/{id}/rating")
+    public ResponseEntity<OrderRatingResponseDto> rateOrder(@PathVariable Long id, @Valid @RequestBody OrderRatingRequestDto dto) {
+        String clientEmail = getCurrentUserEmail();
+        return ResponseEntity.status(201).body(orderRatingService.rateOrder(id, dto, clientEmail));
+    }
+
 
     private String getCurrentUserEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
