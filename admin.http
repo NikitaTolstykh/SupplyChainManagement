@@ -33,16 +33,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvb
 
 ### Добавить нового работника
 POST http://localhost:8080/api/admin/workers
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTIyNDQ4MiwiZXhwIjoxNzUxMzEwODgyfQ.TOIcKos48wFUmtAYGqz8xokmbwj403jphokolgrvV2c
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTMxNTI0OSwiZXhwIjoxNzUxNDAxNjQ5fQ.ZYXaxOFAH7RZCTO9UdgZE_hUb8Exj9upiR34uBFhGM0
 Content-Type: application/json
 
 {
-  "email": "nikita1@gmail.com",
+  "email": "nik@mail.com",
   "password": "111111",
-  "firstName": "Vasyliy",
-  "lastName": "Panov",
+  "firstName": "Dexter",
+  "lastName": "Morgan",
   "phone": "+48732558254",
-  "role": "DISPATCHER"
+  "role": "DRIVER"
 }
 
 ###

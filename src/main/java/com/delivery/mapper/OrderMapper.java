@@ -1,5 +1,6 @@
 package com.delivery.mapper;
 
+import com.delivery.dto.DriverOrderListItemDto;
 import com.delivery.dto.OrderDetailsDto;
 import com.delivery.dto.OrderListItemDto;
 import com.delivery.dto.OrderRequestDto;
@@ -15,4 +16,5 @@ public interface OrderMapper {
     OrderDetailsDto toDetailsDto(Order order);
 
     List<OrderListItemDto> toListItemDto(List<Order> orderList);
+
 }

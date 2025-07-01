@@ -17,12 +17,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsI
 ###
 
 ### Назначить водителя на заказ
-POST http://localhost:8080/api/dispatcher/orders/3/assign-driver
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTIyNTc5OSwiZXhwIjoxNzUxMzEyMTk5fQ.jMYgthYIkFHgIvU5_grxv8fwK_j4_NWF7xarsSt2BcY
+POST http://localhost:8080/api/dispatcher/orders/8/assign-driver
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTMxNTM4NiwiZXhwIjoxNzUxNDAxNzg2fQ.Z65bStUxiBglJcHtjSO_zNzGSB3opPuCx_ChMKTSpjE
 Content-Type: application/json
 
 {
-  "driverId": 6
+  "driverId": 11
 }
 
 ###
