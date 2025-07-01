@@ -13,5 +13,5 @@ public interface ClientService {
 
     OrderDetailsDto getOrderDetails(Long orderId, String email);
 
-    List<OrderListItemDto> getOrdersEligibleForRating(String email);
+    List<OrderListItemDto> getOrdersAvailableForRating(String email);
 }

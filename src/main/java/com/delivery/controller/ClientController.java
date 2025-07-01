@@ -42,7 +42,11 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getOrderDetails(id, email));
     }
 
-
+    @GetMapping("/orders/available-for-rating")
+    public ResponseEntity<List<OrderListItemDto>> getOrdersAvailableForRating() {
+        String email = getCurrentUserEmail();
+        return ResponseEntity.ok(clientService.getOrdersAvailableForRating(email));
+    }
 
     // === RATE Order MANAGEMENT ====
     @PostMapping("/{id}/rating")

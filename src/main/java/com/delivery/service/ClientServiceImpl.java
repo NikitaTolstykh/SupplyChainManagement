@@ -60,7 +60,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<OrderListItemDto> getOrdersEligibleForRating(String email) {
+    public List<OrderListItemDto> getOrdersAvailableForRating(String email) {
         List<Order> orders = orderRepository.findOrdersEligibleForRatingByClientEmail(email);
         return orderMapper.toListItemDto(orders);
     }
