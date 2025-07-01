@@ -42,6 +42,8 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getOrderDetails(id, email));
     }
 
+
+
     // === RATE Order MANAGEMENT ====
     @PostMapping("/{id}/rating")
     public ResponseEntity<OrderRatingResponseDto> rateOrder(@PathVariable Long id, @Valid @RequestBody OrderRatingRequestDto dto) {

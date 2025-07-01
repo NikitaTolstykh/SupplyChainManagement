@@ -1,5 +1,6 @@
 package com.delivery.dto;
 
+import com.delivery.util.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,5 @@ public class OrderListItemDto {
     private String status;
     private BigDecimal price;
     private LocalDateTime createdAt;
-
+    private OrderStatus orderStatus;
 }
