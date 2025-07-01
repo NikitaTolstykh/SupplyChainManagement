@@ -56,11 +56,6 @@ public class OrderServiceRatingImpl implements OrderRatingService {
         }
     }
 
-    private void validateIfOrderHasRating(Order order) {
-        if (orderRatingRepository.existsByOrder(order)) {
-            throw new RatingAlreadyExistsException("Order already has a rating");
-        }
-    }
 
     private OrderRating fillRatingFields(Order order, OrderRatingRequestDto dto) {
         OrderRating rating = new OrderRating();

@@ -72,11 +72,7 @@ public class ClientServiceImpl implements ClientService {
 
     private void emailValidation(Order order, String email) {
         if (!order.getClient().getEmail().equals(email)) {
-            try {
-                throw new AccessDeniedException("You are not allowed to access this order");
-            } catch (AccessDeniedException e) {
-                e.printStackTrace();
-            }
+            throw new IllegalArgumentException("Access denied to this order");
         }
 
     }
