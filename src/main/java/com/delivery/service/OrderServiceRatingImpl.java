@@ -11,9 +11,10 @@ import com.delivery.repository.OrderRatingRepository;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
-
+@Service
 public class OrderServiceRatingImpl implements OrderRatingService {
 
     private final OrderRepository orderRepository;
@@ -38,16 +39,6 @@ public class OrderServiceRatingImpl implements OrderRatingService {
         orderRatingRepository.save(rating);
 
         return orderRatingMapper.toDto(rating);
-    }
-
-    @Override
-    public OrderRatingResponseDto getOrderRating(Long orderId, String clientEmail) {
-        Order order = findOrderById(orderId);
-        emailValidation(order, clientEmail);
-
-        return orderRatingRepository.findByOrder(order)
-                .map(orderRatingMapper::toDto)
-                .orElse(null);
     }
 
     private Order findOrderById(Long orderId) {

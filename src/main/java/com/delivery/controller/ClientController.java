@@ -49,7 +49,6 @@ public class ClientController {
         return ResponseEntity.status(201).body(orderRatingService.rateOrder(id, dto, clientEmail));
     }
 
-
     private String getCurrentUserEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
