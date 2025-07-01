@@ -6,5 +6,5 @@ import com.delivery.dto.OrderRequestDto;
 
 public interface OrderRatingService {
     OrderRatingResponseDto rateOrder(Long orderId, OrderRatingRequestDto dto, String clientEmail);
-    OrderRatingResponseDto getRating(Long orderId, String clientEmail);
+    OrderRatingResponseDto getOrderRating(Long orderId, String clientEmail);
 }

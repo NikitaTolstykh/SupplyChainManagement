@@ -42,7 +42,12 @@ public class OrderServiceRatingImpl implements OrderRatingService {
 
     @Override
     public OrderRatingResponseDto getOrderRating(Long orderId, String clientEmail) {
+        Order order = findOrderById(orderId);
+        emailValidation(order, clientEmail);
 
+        return orderRatingRepository.findByOrder(order)
+                .map(orderRatingMapper::toDto)
+                .orElse(null);
     }
 
     private Order findOrderById(Long orderId) {
