@@ -9,5 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRatingRepository extends JpaRepository<OrderRating, Long> {
+    boolean existsByOrder(Order order);
+
     Optional<OrderRating> findByOrder(Order order);
 }
