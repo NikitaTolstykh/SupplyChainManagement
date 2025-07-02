@@ -53,12 +53,16 @@ public class DriverServiceImpl implements DriverService {
     public void acceptOrder(Long orderId, String driverEmail) {
         Order order = findOrderById(orderId);
         validateAccess(order, driverEmail);
+        User driver = findUserByEmail(driverEmail);
 
         if (order.getStatus() != OrderStatus.ASSIGNED) {
             throw new IllegalStateException("Order is not assigned");
         }
-
+        OrderStatus oldStatus = order.getStatus();
         order.setStatus(OrderStatus.IN_PROGRESS);
+
+        orderStatusHistoryService.logStatusChange(order, oldStatus, OrderStatus.IN_PROGRESS, driver);
+
         orderRepository.save(order);
     }
 
