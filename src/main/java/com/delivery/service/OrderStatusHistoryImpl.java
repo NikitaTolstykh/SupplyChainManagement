@@ -36,6 +36,6 @@ public class OrderStatusHistoryImpl implements OrderStatusHistoryService {
 
     @Override
     public List<OrderStatusHistory> getOrderHistory(Long orderId) {
-        return List.of();
+        return orderStatusHistoryRepository.findByOrder_IdOrderByChangedAtDesc(orderId);
     }
 }
