@@ -73,7 +73,10 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId) {
+    public List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId, String email) {
+        Order order = findOrderById(orderId);
+        emailValidation(order, email);
+
         return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(orderId));
     }
 
@@ -93,5 +96,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
     }
+
+
 }
 

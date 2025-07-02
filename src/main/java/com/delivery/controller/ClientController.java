@@ -48,6 +48,12 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getOrdersAvailableForRating(email));
     }
 
+    @GetMapping("/{id}/status-history")
+    public ResponseEntity<List<OrderStatusHistoryDto>> getOrderStatusHistory(@PathVariable Long id) {
+        String email = getCurrentUserEmail();
+        return ResponseEntity.ok(clientService.getOrderStatusHistory(id, email));
+    }
+
     // === RATE Order MANAGEMENT ====
     @PostMapping("/{id}/rating")
     public ResponseEntity<OrderRatingResponseDto> rateOrder(@PathVariable Long id, @Valid @RequestBody OrderRatingRequestDto dto) {

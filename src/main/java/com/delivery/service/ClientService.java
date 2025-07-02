@@ -16,5 +16,5 @@ public interface ClientService {
 
     List<OrderListItemDto> getOrdersAvailableForRating(String email);
 
-    List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId);
+    List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId, String email);
 }
