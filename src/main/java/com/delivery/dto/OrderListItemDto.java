@@ -19,5 +19,4 @@ public class OrderListItemDto {
     private String status;
     private BigDecimal price;
     private LocalDateTime createdAt;
-    private OrderStatus orderStatus;
 }

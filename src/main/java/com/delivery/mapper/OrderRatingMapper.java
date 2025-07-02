@@ -8,6 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface OrderRatingMapper {
     @Mapping(source = "order.id", target = "orderId")
-    @Mapping(expression = "java(rating.getClient().getFirstName() + \" \" + rating.getClient().getLastName())", target = "clientFullName")
+    @Mapping(expression = "java(orderRating.getClient().getFirstName() + \" \" + orderRating.getClient().getLastName())", target = "clientFullName")
     OrderRatingResponseDto toDto(OrderRating orderRating);
 }

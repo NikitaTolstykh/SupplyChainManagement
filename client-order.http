@@ -1,14 +1,14 @@
 ### GET all orders
 GET http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTExMzc5ODksImV4cCI6MTc1MTIyNDM4OX0.HT6cB0uwcKupomRLBcB-gsWeyQs50DiAmWDRM_XMKX8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
 
 ### GET order details
-GET http://localhost:8080/api/client/orders/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTExMzc5ODksImV4cCI6MTc1MTIyNDM4OX0.HT6cB0uwcKupomRLBcB-gsWeyQs50DiAmWDRM_XMKX8
+GET http://localhost:8080/api/client/orders/8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
 
 ### POST create order
 POST http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTEyMjU2NDIsImV4cCI6MTc1MTMxMjA0Mn0.jSV6OXHnee9wjgoACX6e9KxLsKd9a5HHbG13qmZOLCo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
 Content-Type: application/json
 
 {
@@ -23,4 +23,17 @@ Content-Type: application/json
   "pickupTime": "2025-07-01T12:00:00"
 }
 
-###
+### GET list available orders to rate
+GET http://localhost:8080/api/client/orders/available-for-rating
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
+
+
+### POST rate order
+POST http://localhost:8080/api/client/orders/8/rating
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
+Content-Type: application/json
+
+{
+"stars": 4,
+  "comment": "very good"
+}

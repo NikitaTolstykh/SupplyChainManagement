@@ -1,6 +1,8 @@
 package com.delivery.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +25,8 @@ public class OrderRating {
     private Long id;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 5)
+    @Min(1)
+    @Max(5)
     private Integer stars;
 
     @Column(length = 1000)
