@@ -57,7 +57,7 @@ public class DispatcherServiceImpl implements DispatcherService {
 
 
         order.setDriver(driver);
-
+        order.setVehicle(driver.getVehicle());
         changeStatus(order);
 
         orderRepository.save(order);

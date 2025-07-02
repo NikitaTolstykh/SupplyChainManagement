@@ -59,6 +59,12 @@ public class ClientServiceImpl implements ClientService {
         return orderMapper.toDetailsDto(order);
     }
 
+    @Override
+    public List<OrderListItemDto> getOrdersAvailableForRating(String email) {
+        List<Order> orders = orderRepository.findOrdersEligibleForRatingByClientEmail(email);
+        return orderMapper.toListItemDto(orders);
+    }
+
 
     private User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
@@ -72,11 +78,7 @@ public class ClientServiceImpl implements ClientService {
 
     private void emailValidation(Order order, String email) {
         if (!order.getClient().getEmail().equals(email)) {
-            try {
-                throw new AccessDeniedException("You are not allowed to access this order");
-            } catch (AccessDeniedException e) {
-                e.printStackTrace();
-            }
+            throw new IllegalArgumentException("Access denied to this order");
         }
 
     }
