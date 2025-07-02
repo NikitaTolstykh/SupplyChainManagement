@@ -82,7 +82,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         Order order = findOrderById(id);
         User dispatcher = getCurrentUser();
 
-        OrderStatus oldStatus = dto.getStatus();
+        OrderStatus oldStatus = order.getStatus();
         OrderStatus newStatus = dto.getStatus();
 
         order.setStatus(newStatus);

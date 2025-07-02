@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class OrderListItemDto {
     private Long id;
     private String fromAddress;
+    private String toAddress;
     private String status;
     private BigDecimal price;
     private LocalDateTime createdAt;

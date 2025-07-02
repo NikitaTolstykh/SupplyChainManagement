@@ -1,39 +1,43 @@
 ### GET all orders
 GET http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
 
 ### GET order details
-GET http://localhost:8080/api/client/orders/8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
+GET http://localhost:8080/api/client/orders/10
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
 
 ### POST create order
 POST http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
 Content-Type: application/json
 
 {
-  "fromAddress": "ул. 40л. Победы, 12",
-  "toAddress": "ул.Новокузнецкая 15",
-  "cargoType": "Документы",
-  "cargoDescription": "Бумаги ценные",
-  "weightKg": 5,
-  "comment": "Доставить в срочном порядке",
-  "distanceCategory": "LONG",
+  "fromAddress": "ул. Daleka 6s/1,Grodzisk Mazowiecki",
+  "toAddress": "Towarowa 22, Warszawa",
+  "cargoType": "Elektronika",
+  "cargoDescription": "Komputer",
+  "weightKg": 10,
+  "comment": "",
+  "distanceCategory": "MEDIUM",
   "paymentMethod": "CASH",
-  "pickupTime": "2025-07-01T12:00:00"
+  "pickupTime": "2025-07-04T12:00:00"
 }
 
 ### GET list available orders to rate
 GET http://localhost:8080/api/client/orders/available-for-rating
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
 
 
 ### POST rate order
-POST http://localhost:8080/api/client/orders/8/rating
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0MDM2NTAsImV4cCI6MTc1MTQ5MDA1MH0.vxhhO4s1Q8e1uxFq53apCz3JhHPX84zo7Avu-F9cHyo
+POST http://localhost:8080/api/client/orders/10/rating
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
 Content-Type: application/json
 
 {
-"stars": 4,
-  "comment": "very good"
+"stars": 5,
+  "comment": "Bardzo dobrze, grzeczny kierowca i extra serwis"
 }
+
+### GET order status history
+GET http://localhost:8080/api/client/orders/10/status-history
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0

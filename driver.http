@@ -1,5 +1,23 @@
 ### GET request to example server
 POST http://localhost:8080/api/driver/orders/8/complete
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTEzMTU0OTMsImV4cCI6MTc1MTQwMTg5M30.Qklt4h_WwEhakLvgvdviPL5m1lUAOppeB5_71OLSNas
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI0NzcsImV4cCI6MTc1MTU3ODg3N30.Io8d4Bj20f9I9pONsAvX-DKslV1V-kL8pD2xeJIMErc
 
-###
+### GET assigned orders
+GET http://localhost:8080/api/driver/orders/assigned
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI0NzcsImV4cCI6MTc1MTU3ODg3N30.Io8d4Bj20f9I9pONsAvX-DKslV1V-kL8pD2xeJIMErc
+
+###GET completed orders
+GET http://localhost:8080/api/driver/orders/completed
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI0NzcsImV4cCI6MTc1MTU3ODg3N30.Io8d4Bj20f9I9pONsAvX-DKslV1V-kL8pD2xeJIMErc
+
+###GET orders details
+GET http://localhost:8080//api/driver/orders/10
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI0NzcsImV4cCI6MTc1MTU3ODg3N30.Io8d4Bj20f9I9pONsAvX-DKslV1V-kL8pD2xeJIMErc
+
+### POST accept order
+POST http://localhost:8080//api/driver/orders/10/accept
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI0NzcsImV4cCI6MTc1MTU3ODg3N30.Io8d4Bj20f9I9pONsAvX-DKslV1V-kL8pD2xeJIMErc
+
+### POST finish delivery
+POST http://localhost:8080//api/driver/orders/10/complete
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI0NzcsImV4cCI6MTc1MTU3ODg3N30.Io8d4Bj20f9I9pONsAvX-DKslV1V-kL8pD2xeJIMErc
