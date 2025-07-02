@@ -3,11 +3,13 @@ package com.delivery.service;
 import com.delivery.dto.OrderDetailsDto;
 import com.delivery.dto.OrderListItemDto;
 import com.delivery.dto.OrderRequestDto;
+import com.delivery.dto.OrderStatusHistoryDto;
 import com.delivery.entity.Order;
 import com.delivery.entity.User;
 import com.delivery.exception.OrderNotFoundException;
 import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.OrderMapper;
+import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -22,13 +24,18 @@ public class ClientServiceImpl implements ClientService {
     private final UserRepository userRepository;
     private final OrderMapper orderMapper;
     private final PriceCalculatorService priceCalculatorService;
+    private final OrderStatusHistoryService orderStatusHistoryService;
+    private final OrderStatusHistoryMapper orderStatusHistoryMapper;
 
     public ClientServiceImpl(OrderRepository orderRepository, UserRepository userRepository,
-                             OrderMapper orderMapper, PriceCalculatorService priceCalculatorService) {
+                             OrderMapper orderMapper, PriceCalculatorService priceCalculatorService,
+                             OrderStatusHistoryService orderStatusHistoryService, OrderStatusHistoryMapper orderStatusHistoryMapper) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderMapper = orderMapper;
         this.priceCalculatorService = priceCalculatorService;
+        this.orderStatusHistoryService = orderStatusHistoryService;
+        this.orderStatusHistoryMapper = orderStatusHistoryMapper;
     }
 
     @Override
@@ -65,6 +72,10 @@ public class ClientServiceImpl implements ClientService {
         return orderMapper.toListItemDto(orders);
     }
 
+    @Override
+    public List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId) {
+        return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(orderId));
+    }
 
     private User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email)
