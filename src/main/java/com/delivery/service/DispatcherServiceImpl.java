@@ -116,6 +116,11 @@ public class DispatcherServiceImpl implements DispatcherService {
         return dispatcherMapper.toAvailableDriversDto(availableDrivers);
     }
 
+    @Override
+    public List<OrderStatusHistoryDto> getOrderStatusHistory(Long id) {
+        return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(id));
+    }
+
     private Order findOrderById(Long id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException("Order with id " + id + "not found"));
@@ -151,6 +156,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserWithEmailNotFoundException("User with email: " + email + " not found"))
+                .orElseThrow(() -> new UserWithEmailNotFoundException("User with email: " + email + " not found"));
     }
 }

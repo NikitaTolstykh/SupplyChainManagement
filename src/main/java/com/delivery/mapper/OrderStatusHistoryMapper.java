@@ -12,5 +12,5 @@ public interface OrderStatusHistoryMapper {
     @Mapping(source = "changedBy.email", target = "changedBy")
     OrderStatusHistoryDto toDto(OrderStatusHistory orderStatusHistory);
 
-    List<OrderStatusHistoryDto> toDtoList(List<OrderStatusHistoryDto> orderStatusHistoryList);
+    List<OrderStatusHistoryDto> toDtoList(List<OrderStatusHistory> orderStatusHistoryList);
 }
