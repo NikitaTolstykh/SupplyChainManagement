@@ -27,6 +27,11 @@ public class DispatcherController {
         return ResponseEntity.ok(dispatcherService.getOrderDetails(id));
     }
 
+    @GetMapping("/orders/{id}/status-history")
+    public ResponseEntity<List<OrderStatusHistoryDto>> getOrderStatusHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(dispatcherService.getOrderStatusHistory(id));
+    }
+
     @GetMapping("/available-drivers")
     public ResponseEntity<List<AvailableDriverDto>> getAvailableDrivers() {
         return ResponseEntity.ok(dispatcherService.availableDrivers());
