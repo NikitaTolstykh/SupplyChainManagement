@@ -16,5 +16,6 @@ public class OrderStatusHistoryDto {
     private Long id;
     private OrderStatus fromStatus;
     private OrderStatus toStatus;
+    private String changedBy;
     private LocalDateTime changedAt;
 }
