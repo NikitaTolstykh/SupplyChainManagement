@@ -2,6 +2,7 @@ package com.delivery.repository;
 
 import com.delivery.dto.projection.MonthlyStatsProjection;
 import com.delivery.dto.projection.OrderStatProjection;
+import com.delivery.dto.projection.RouteStatsProjection;
 import com.delivery.entity.Order;
 import com.delivery.util.OrderStatus;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -32,6 +33,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 
 
+
+
     @Query("""
             SELECT CONCAT(o.fromAddress, ' -> ', o.toAddress) as route,
                        COUNT (o) as orderCount
@@ -40,5 +43,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                                   GROUP BY o.fromAddress, o.toAddress
                                   ORDER BY orderCount DESC 
             """)
-    List<MonthlyStatsProjection> getMonthlyStatsByClientEmail(@Param("clientEmail") String clientEmail);
+    List<RouteStatsProjection> getRouteStatsByClientEmail(@Param("clientEmail") String clientEmail);
+
+
 }
