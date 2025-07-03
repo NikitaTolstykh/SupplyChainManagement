@@ -14,6 +14,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
+
 @Service
 public class OrderServiceRatingImpl implements OrderRatingService {
 
@@ -39,6 +41,11 @@ public class OrderServiceRatingImpl implements OrderRatingService {
         orderRatingRepository.save(rating);
 
         return orderRatingMapper.toDto(rating);
+    }
+
+    @Override
+    public List<OrderRatingResponseDto> opinionList() {
+        return orderRatingMapper.opinionList(orderRatingRepository.findAll());
     }
 
     private Order findOrderById(Long orderId) {

@@ -5,13 +5,16 @@ import com.delivery.entity.Order;
 import com.delivery.entity.User;
 import com.delivery.exception.DriverNotFoundException;
 import com.delivery.exception.OrderNotFoundException;
+import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.OrderMapper;
+import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,16 +28,22 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final OrderRepository orderRepository;
     private final RoleValidator roleValidator;
     private final PriceCalculatorService priceCalculatorService;
+    private final OrderStatusHistoryMapper orderStatusHistoryMapper;
+    private final OrderStatusHistoryService orderStatusHistoryService;
 
     public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper,
                                  UserRepository userRepository, OrderRepository orderRepository,
-                                 RoleValidator roleValidator, PriceCalculatorService priceCalculatorService) {
+                                 RoleValidator roleValidator, PriceCalculatorService priceCalculatorService,
+                                 OrderStatusHistoryMapper orderStatusHistoryMapper,
+                                 OrderStatusHistoryService orderStatusHistoryService) {
         this.dispatcherMapper = dispatcherMapper;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.roleValidator = roleValidator;
         this.priceCalculatorService = priceCalculatorService;
+        this.orderStatusHistoryMapper = orderStatusHistoryMapper;
+        this.orderStatusHistoryService = orderStatusHistoryService;
     }
 
     @Override
@@ -54,11 +63,15 @@ public class DispatcherServiceImpl implements DispatcherService {
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
         Order order = findOrderById(id);
         User driver = findAndValidateDriver(dto.getDriverId());
+        User dispatcher = getCurrentUser();
 
+        OrderStatus oldStatus = order.getStatus();
 
         order.setDriver(driver);
         order.setVehicle(driver.getVehicle());
         changeStatus(order);
+
+        orderStatusHistoryService.logStatusChange(order, oldStatus, order.getStatus(), dispatcher);
 
         orderRepository.save(order);
     }
@@ -67,9 +80,14 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Transactional
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
         Order order = findOrderById(id);
+        User dispatcher = getCurrentUser();
 
+        OrderStatus oldStatus = order.getStatus();
         OrderStatus newStatus = dto.getStatus();
+
         order.setStatus(newStatus);
+
+        orderStatusHistoryService.logStatusChange(order, oldStatus, newStatus, dispatcher);
 
         orderRepository.save(order);
     }
@@ -84,11 +102,14 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
-    public void deleteOrder(Long id) {
+    public void cancelOrder(Long id) {
         if (!orderRepository.existsById(id)) {
             throw new OrderNotFoundException("Order not found with id: " + id);
         }
-        orderRepository.deleteById(id);
+        Order order = findOrderById(id);
+        order.setStatus(OrderStatus.CANCELLED);
+
+        orderRepository.save(order);
     }
 
     @Override
@@ -96,6 +117,11 @@ public class DispatcherServiceImpl implements DispatcherService {
         List<OrderStatus> activeStatuses = List.of(OrderStatus.ASSIGNED, OrderStatus.IN_PROGRESS);
         List<User> availableDrivers = userRepository.findAvailableDrivers(activeStatuses);
         return dispatcherMapper.toAvailableDriversDto(availableDrivers);
+    }
+
+    @Override
+    public List<OrderStatusHistoryDto> getOrderStatusHistory(Long id) {
+        return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(id));
     }
 
     private Order findOrderById(Long id) {
@@ -128,5 +154,11 @@ public class DispatcherServiceImpl implements DispatcherService {
 
         BigDecimal newPrice = priceCalculatorService.calculatePrice(dto.getWeightKg(), dto.getDistanceCategory());
         order.setPrice(newPrice);
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UserWithEmailNotFoundException("User with email: " + email + " not found"));
     }
 }

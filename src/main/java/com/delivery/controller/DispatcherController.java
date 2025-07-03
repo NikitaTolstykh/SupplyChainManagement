@@ -2,6 +2,7 @@ package com.delivery.controller;
 
 import com.delivery.dto.*;
 import com.delivery.service.DispatcherService;
+import com.delivery.service.OrderRatingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +13,11 @@ import java.util.List;
 @RequestMapping("/api/dispatcher")
 public class DispatcherController {
     private final DispatcherService dispatcherService;
+    private final OrderRatingService orderRatingService;
 
-    public DispatcherController(DispatcherService dispatcherService) {
+    public DispatcherController(DispatcherService dispatcherService, OrderRatingService orderRatingService) {
         this.dispatcherService = dispatcherService;
+        this.orderRatingService = orderRatingService;
     }
 
     @GetMapping("/orders")
@@ -27,9 +30,19 @@ public class DispatcherController {
         return ResponseEntity.ok(dispatcherService.getOrderDetails(id));
     }
 
+    @GetMapping("/orders/{id}/status-history")
+    public ResponseEntity<List<OrderStatusHistoryDto>> getOrderStatusHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(dispatcherService.getOrderStatusHistory(id));
+    }
+
     @GetMapping("/available-drivers")
     public ResponseEntity<List<AvailableDriverDto>> getAvailableDrivers() {
         return ResponseEntity.ok(dispatcherService.availableDrivers());
+    }
+
+    @GetMapping("/orders/ratings")
+    public ResponseEntity<List<OrderRatingResponseDto>> getOrderRatings() {
+        return ResponseEntity.ok(orderRatingService.opinionList());
     }
 
     @PostMapping("/orders/{id}/assign-driver")
@@ -50,9 +63,9 @@ public class DispatcherController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/orders/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        dispatcherService.deleteOrder(id);
+    @PatchMapping("/orders/{id}/cancel-order")
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long id) {
+        dispatcherService.cancelOrder(id);
         return ResponseEntity.noContent().build();
     }
 

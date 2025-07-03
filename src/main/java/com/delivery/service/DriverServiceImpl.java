@@ -23,13 +23,15 @@ public class DriverServiceImpl implements DriverService {
     private final UserRepository userRepository;
     private final DriverMapper driverMapper;
     private final DispatcherMapper dispatcherMapper;
+    private final OrderStatusHistoryService orderStatusHistoryService;
 
     public DriverServiceImpl(OrderRepository orderRepository, UserRepository userRepository
-            , DriverMapper driverMapper, DispatcherMapper dispatcherMapper) {
+            , DriverMapper driverMapper, DispatcherMapper dispatcherMapper, OrderStatusHistoryService orderStatusHistoryService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.driverMapper = driverMapper;
         this.dispatcherMapper = dispatcherMapper;
+        this.orderStatusHistoryService = orderStatusHistoryService;
     }
 
     @Override
@@ -51,12 +53,16 @@ public class DriverServiceImpl implements DriverService {
     public void acceptOrder(Long orderId, String driverEmail) {
         Order order = findOrderById(orderId);
         validateAccess(order, driverEmail);
+        User driver = findUserByEmail(driverEmail);
 
         if (order.getStatus() != OrderStatus.ASSIGNED) {
             throw new IllegalStateException("Order is not assigned");
         }
-
+        OrderStatus oldStatus = order.getStatus();
         order.setStatus(OrderStatus.IN_PROGRESS);
+
+        orderStatusHistoryService.logStatusChange(order, oldStatus, OrderStatus.IN_PROGRESS, driver);
+
         orderRepository.save(order);
     }
 
@@ -65,12 +71,17 @@ public class DriverServiceImpl implements DriverService {
     public void completeOrder(Long orderId, String driverEmail) {
         Order order = findOrderById(orderId);
         validateAccess(order, driverEmail);
+        User driver = findUserByEmail(driverEmail);
 
         if (order.getStatus() != OrderStatus.IN_PROGRESS) {
             throw new IllegalArgumentException("You are not allowed to access this order");
         }
 
+        OrderStatus oldStatus = order.getStatus();
         order.setStatus(OrderStatus.DELIVERED);
+
+        orderStatusHistoryService.logStatusChange(order, oldStatus, OrderStatus.DELIVERED, driver);
+
         orderRepository.save(order);
     }
 

@@ -1,6 +1,7 @@
 package com.delivery.service;
 
 import com.delivery.dto.*;
+import com.delivery.entity.OrderStatusHistory;
 
 import java.util.List;
 
@@ -15,7 +16,9 @@ public interface DispatcherService {
 
     void updateOrderInfo(Long id, OrderRequestDto dto);
 
-    void deleteOrder(Long id);
+    void cancelOrder(Long id);
 
     List<AvailableDriverDto> availableDrivers();
+
+    List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId);
 }
