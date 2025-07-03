@@ -14,4 +14,5 @@ public interface OrderRatingMapper {
     @Mapping(expression = "java(orderRating.getClient().getFirstName() + \" \" + orderRating.getClient().getLastName())", target = "clientFullName")
     OrderRatingResponseDto toDto(OrderRating orderRating);
 
+    List<OrderRatingResponseDto> opinionList(List<OrderRating> orderRatingList);
 }
