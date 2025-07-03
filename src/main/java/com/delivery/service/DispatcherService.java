@@ -16,7 +16,7 @@ public interface DispatcherService {
 
     void updateOrderInfo(Long id, OrderRequestDto dto);
 
-    void deleteOrder(Long id);
+    void cancelOrder(Long id);
 
     List<AvailableDriverDto> availableDrivers();
 

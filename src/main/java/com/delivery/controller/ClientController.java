@@ -42,12 +42,6 @@ public class ClientController {
         return ResponseEntity.ok(clientService.getOrderDetails(id, email));
     }
 
-    @GetMapping("/available-for-rating")
-    public ResponseEntity<List<OrderListItemDto>> getOrdersAvailableForRating() {
-        String email = getCurrentUserEmail();
-        return ResponseEntity.ok(clientService.getOrdersAvailableForRating(email));
-    }
-
     @GetMapping("/{id}/status-history")
     public ResponseEntity<List<OrderStatusHistoryDto>> getOrderStatusHistory(@PathVariable Long id) {
         String email = getCurrentUserEmail();
@@ -59,6 +53,12 @@ public class ClientController {
     public ResponseEntity<OrderRatingResponseDto> rateOrder(@PathVariable Long id, @Valid @RequestBody OrderRatingRequestDto dto) {
         String clientEmail = getCurrentUserEmail();
         return ResponseEntity.status(201).body(orderRatingService.rateOrder(id, dto, clientEmail));
+    }
+
+    @GetMapping("/available-for-rating")
+    public ResponseEntity<List<OrderListItemDto>> getOrdersAvailableForRating() {
+        String email = getCurrentUserEmail();
+        return ResponseEntity.ok(clientService.getOrdersAvailableForRating(email));
     }
 
     private String getCurrentUserEmail() {

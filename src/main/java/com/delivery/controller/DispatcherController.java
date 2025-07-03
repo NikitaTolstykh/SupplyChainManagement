@@ -55,9 +55,9 @@ public class DispatcherController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/orders/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        dispatcherService.deleteOrder(id);
+    @PatchMapping("/orders/{id}/cancel-order")
+    public ResponseEntity<Void> cancelOrder(@PathVariable Long id) {
+        dispatcherService.cancelOrder(id);
         return ResponseEntity.noContent().build();
     }
 

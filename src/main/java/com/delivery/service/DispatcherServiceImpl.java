@@ -102,11 +102,14 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
-    public void deleteOrder(Long id) {
+    public void cancelOrder(Long id) {
         if (!orderRepository.existsById(id)) {
             throw new OrderNotFoundException("Order not found with id: " + id);
         }
-        orderRepository.deleteById(id);
+        Order order = findOrderById(id);
+        order.setStatus(OrderStatus.CANCELLED);
+
+        orderRepository.save(order);
     }
 
     @Override
