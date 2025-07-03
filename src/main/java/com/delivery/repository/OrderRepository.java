@@ -1,5 +1,6 @@
 package com.delivery.repository;
 
+import com.delivery.dto.projection.OrderStatProjection;
 import com.delivery.entity.Order;
 import com.delivery.util.OrderStatus;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -19,4 +20,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             " AND o.id NOT IN (SELECT r.order.id FROM OrderRating r)")
     List<Order> findOrdersEligibleForRatingByClientEmail(@Param("email") String email);
 
+    @Query("""
+            SELECT COUNT(o) as totalOrders,
+                   SUM(CASE WHEN o.status = 'DELIVERED' THEN 1 ELSE 0 END) as completedOrders,
+                   SUM(CASE WHEN o.status = 'CANCELLED' THEN 1 ELSE 0 END) as cancelledOrders,
+                   COALESCE(SUM(o.price), 0) as totalAmount
+            FROM Order o WHERE o.client.email = :clientEmail
+            """)
+    OrderStatProjection getOrderStatsByClientEmail(@Param("clientEmail") String clientEmail);
 }
