@@ -1,5 +1,6 @@
 package com.delivery.repository;
 
+import com.delivery.dto.projection.MonthlyStatsProjection;
 import com.delivery.dto.projection.OrderStatProjection;
 import com.delivery.entity.Order;
 import com.delivery.util.OrderStatus;
@@ -28,4 +29,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             FROM Order o WHERE o.client.email = :clientEmail
             """)
     OrderStatProjection getOrderStatsByClientEmail(@Param("clientEmail") String clientEmail);
+
+
+
+    @Query("""
+            SELECT CONCAT(o.fromAddress, ' -> ', o.toAddress) as route,
+                       COUNT (o) as orderCount
+                       FROM Order o
+                                  WHERE o.client.email =:clientEmail
+                                  GROUP BY o.fromAddress, o.toAddress
+                                  ORDER BY orderCount DESC 
+            """)
+    List<MonthlyStatsProjection> getMonthlyStatsByClientEmail(@Param("clientEmail") String clientEmail);
 }
