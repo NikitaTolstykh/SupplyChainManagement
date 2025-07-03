@@ -31,9 +31,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             """)
     OrderStatProjection getOrderStatsByClientEmail(@Param("clientEmail") String clientEmail);
 
-
-
-
+    @Query("""
+            SELECT FUNCTION('DATE_FORMAT', o.createdAt, '%Y-%m') as yearMonth,
+                   COUNT(o) as orderCount,
+                   COALESCE(SUM(o.price), 0) as totalAmount
+            FROM Order o 
+            WHERE o.client.email = :clientEmail
+            GROUP BY FUNCTION('DATE_FORMAT', o.createdAt, '%Y-%m')
+            ORDER BY FUNCTION('DATE_FORMAT', o.createdAt, '%Y-%m')
+            """)
+    List<MonthlyStatsProjection> getMonthlyStatsByClientEmail(@Param("clientEmail") String clientEmail);
 
     @Query("""
             SELECT CONCAT(o.fromAddress, ' -> ', o.toAddress) as route,
