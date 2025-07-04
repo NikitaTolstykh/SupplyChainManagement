@@ -69,6 +69,15 @@ public interface ClientStatisticsMapper {
                 ));
     }
 
-
+    @Named("getMostUsedRoute")
+    default String getMostUsedRoute(List<RouteStatsProjection> routeStats) {
+        if (routeStats == null || routeStats.isEmpty()) {
+            return null;
+        }
+        return routeStats.stream()
+                .findFirst()
+                .map(RouteStatsProjection::getRoute)
+                .orElse(null);
+    }
 
 }
