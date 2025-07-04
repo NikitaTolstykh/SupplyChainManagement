@@ -65,6 +65,7 @@ public class ClientController {
     }
 
     // === STATISTICS ====
+
     @GetMapping("/statistics")
     public ResponseEntity<ClientStatisticsDto> getClientStatistics() {
         String email = getCurrentUserEmail();
