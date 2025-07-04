@@ -12,6 +12,8 @@ import org.mapstruct.Named;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "Spring")
 public interface ClientStatisticsMapper {
@@ -38,4 +40,18 @@ public interface ClientStatisticsMapper {
         }
         return orderStats.getTotalAmount().divide(BigDecimal.valueOf(orderStats.getTotalOrders()), 2, RoundingMode.HALF_UP);
     }
+    @Named("convertToSpentByMonth")
+    default Map<String, BigDecimal> convertToSpentByMonth(List<MonthlyStatsProjection> monthlyStats) {
+        if (monthlyStats == null || monthlyStats.isEmpty()) {
+            return Map.of();
+        }
+        return monthlyStats.stream()
+                .collect(Collectors.toMap(
+                        MonthlyStatsProjection::getYearMonth,
+                        MonthlyStatsProjection::getTotalAmount,
+                        (existing, replacement) -> existing
+                ));
+    }
+
+
 }
