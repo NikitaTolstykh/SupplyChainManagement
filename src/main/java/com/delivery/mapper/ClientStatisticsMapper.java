@@ -40,6 +40,22 @@ public interface ClientStatisticsMapper {
         }
         return orderStats.getTotalAmount().divide(BigDecimal.valueOf(orderStats.getTotalOrders()), 2, RoundingMode.HALF_UP);
     }
+
+
+    @Named("convertToOrdersByMonth")
+    default Map<String, Long> convertToOrdersByMonth(List<MonthlyStatsProjection> monthlyStats) {
+        if (monthlyStats == null || monthlyStats.isEmpty()) {
+            return Map.of();
+        }
+        return monthlyStats.stream()
+                .collect(Collectors.toMap(
+                        MonthlyStatsProjection::getYearMonth,
+                        MonthlyStatsProjection::getOrderCount,
+                        (existing, replacement) -> existing
+                ));
+    }
+
+
     @Named("convertToSpentByMonth")
     default Map<String, BigDecimal> convertToSpentByMonth(List<MonthlyStatsProjection> monthlyStats) {
         if (monthlyStats == null || monthlyStats.isEmpty()) {
@@ -52,6 +68,7 @@ public interface ClientStatisticsMapper {
                         (existing, replacement) -> existing
                 ));
     }
+
 
 
 }
