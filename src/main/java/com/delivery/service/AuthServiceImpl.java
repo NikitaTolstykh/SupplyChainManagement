@@ -38,7 +38,6 @@ public class AuthServiceImpl implements AuthService {
         roleValidator.validateRegistrationRole(userDto.getRole());
 
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
         User savedUser = userRepository.save(userMapper.userToEntity(userDto));
         String token = jwtUtil.generateToken(savedUser.getEmail());
 

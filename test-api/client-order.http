@@ -1,14 +1,14 @@
 ### GET all orders
 GET http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
 
 ### GET order details
 GET http://localhost:8080/api/client/orders/10
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
 
 ### POST create order
 POST http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
 Content-Type: application/json
 
 {
@@ -25,12 +25,12 @@ Content-Type: application/json
 
 ### GET list available orders to rate
 GET http://localhost:8080/api/client/orders/available-for-rating
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
 
 
 ### POST rate order
 POST http://localhost:8080/api/client/orders/10/rating
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
 Content-Type: application/json
 
 {
@@ -40,4 +40,9 @@ Content-Type: application/json
 
 ### GET order status history
 GET http://localhost:8080/api/client/orders/10/status-history
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE0OTI4NzksImV4cCI6MTc1MTU3OTI3OX0.I4IHvDQF60zhnZG4Hk6ljpUsREX7xaKUmCflr2g1HM0
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+
+
+###GET client statistics
+GET http://localhost:8080/api/client/orders/statistics
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q

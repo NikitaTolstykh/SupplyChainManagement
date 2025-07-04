@@ -54,8 +54,7 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle = vehicleMapper.vehicleToEntity(vehicleDto);
         vehicle.setDriver(driver);
 
-        Vehicle savedVehicle = vehicleRepository.save(vehicle);
-        return vehicleMapper.vehicleToDto(savedVehicle);
+        return vehicleMapper.vehicleToDto(vehicleRepository.save(vehicle));
     }
 
     @Override

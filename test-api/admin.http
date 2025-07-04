@@ -14,26 +14,22 @@ GET http://localhost:8080/api/admin/workers
 
 ### Получить работников по роли
 GET http://localhost:8080/api/admin/workers/role/DRIVER
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
 
 
 ###
 
 ### Поиск работников
 GET http://localhost:8080/api/admin/workers/search?query=User
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
 
 ###
 
 ### Получить работника по ID
 GET http://localhost:8080/api/admin/workers/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
 
 ###
 
 ### Добавить нового работника
 POST http://localhost:8080/api/admin/workers
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MTMxNTI0OSwiZXhwIjoxNzUxNDAxNjQ5fQ.ZYXaxOFAH7RZCTO9UdgZE_hUb8Exj9upiR34uBFhGM0
 Content-Type: application/json
 
 {
@@ -49,7 +45,6 @@ Content-Type: application/json
 
 ### Обновить работника
 PUT http://localhost:8080/api/admin/workers/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
 Content-Type: application/json
 
 {
