@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/client/**").hasRole("CLIENT")
+                        .requestMatchers("/api/driver/**").hasRole("DRIVER")
                         .requestMatchers("/api/dispatcher/**").hasRole("DISPATCHER")
                         .anyRequest().authenticated()
                 )

@@ -1,6 +1,5 @@
 package com.delivery.mapper;
 
-import com.delivery.dto.DispatcherOrderRatingDto;
 import com.delivery.dto.OrderRatingResponseDto;
 import com.delivery.entity.OrderRating;
 import org.mapstruct.Mapper;

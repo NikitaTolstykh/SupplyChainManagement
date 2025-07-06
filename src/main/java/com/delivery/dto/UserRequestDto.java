@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRequestDto {
-    private Long id;
-
     @Email(message = "Email must be valid")
     @NotBlank(message = "user must have an email")
     private String email;

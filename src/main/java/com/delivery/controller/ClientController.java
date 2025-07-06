@@ -2,6 +2,7 @@ package com.delivery.controller;
 
 import com.delivery.dto.*;
 import com.delivery.service.ClientService;
+import com.delivery.service.ClientStatisticsService;
 import com.delivery.service.OrderRatingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,12 @@ import java.util.List;
 public class ClientController {
     private final ClientService clientService;
     private final OrderRatingService orderRatingService;
+    private final ClientStatisticsService clientStatisticsService;
 
-    public ClientController(ClientService clientService, OrderRatingService orderRatingService) {
+    public ClientController(ClientService clientService, OrderRatingService orderRatingService, ClientStatisticsService clientStatisticsService) {
         this.clientService = clientService;
         this.orderRatingService = orderRatingService;
+        this.clientStatisticsService = clientStatisticsService;
     }
 
     // === Order MANAGEMENT ====
@@ -59,6 +62,14 @@ public class ClientController {
     public ResponseEntity<List<OrderListItemDto>> getOrdersAvailableForRating() {
         String email = getCurrentUserEmail();
         return ResponseEntity.ok(clientService.getOrdersAvailableForRating(email));
+    }
+
+    // === STATISTICS ====
+
+    @GetMapping("/statistics")
+    public ResponseEntity<ClientStatisticsDto> getClientStatistics() {
+        String email = getCurrentUserEmail();
+        return ResponseEntity.ok(clientStatisticsService.getClientStatistics(email));
     }
 
     private String getCurrentUserEmail() {
