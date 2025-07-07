@@ -27,13 +27,12 @@ public class EmailServiceImpl implements EmailService {
             message.setTo(to);
             message.setSubject(subject);
             message.setText(body);
-            message.setFrom("noreply@delivery.com");
 
             mailSender.send(message);
-            log.info("Email sent successfully to: {}");
+            log.info("Email sent successfully to: {}", to);
 
         } catch (Exception e) {
-            log.error("Failed to send email to: {}");
+            log.error("Failed to send email to: {}", to, e);
         }
     }
 
@@ -47,7 +46,6 @@ public class EmailServiceImpl implements EmailService {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
-            helper.setFrom("noreply@delivery.com");
 
             mailSender.send(message);
             log.info("HTML email sent successfully to: {}", to);

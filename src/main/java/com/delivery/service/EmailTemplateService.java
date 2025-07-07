@@ -1,5 +1,6 @@
 package com.delivery.service;
 
+import com.delivery.entity.Order;
 import com.delivery.entity.User;
 import com.delivery.entity.Vehicle;
 
@@ -44,4 +45,30 @@ public class EmailTemplateService {
                 vehicle.getLicensePlate(), vehicle.getColor());
     }
 
+    public String createOrderCreatedEmail(Order order) {
+        return String.format("""
+            <html>
+            <body>
+                <h2>Order successfully created!!</h2>
+                <p>Hello, %s!</p>
+                <p>Your order #%d has been successfully created.</p>
+                <p><strong>Order details::</strong></p>
+                <ul>
+                    <li>From: %s</li>
+                    <li>To: %s</li>
+                    <li>Cargo type: %s</li>
+                    <li>Weight: %s кг</li>
+                    <li>Cost: %s руб.</li>
+                    <li>Pickup time: %s</li>
+                </ul>
+                <p>Order status: %s</p>
+                <p>We will notify you about the change in order status.</p>
+                <p>Best regards,<br>Delivery system team</p>
+            </body>
+            </html>
+            """, order.getClient().getFirstName(), order.getId(),
+                order.getFromAddress(), order.getToAddress(), order.getCargoType(),
+                order.getWeightKg(), order.getPrice(), order.getPickupTime(),
+                order.getStatus());
+    }
 }
