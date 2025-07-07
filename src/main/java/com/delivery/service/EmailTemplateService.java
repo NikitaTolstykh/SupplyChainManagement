@@ -85,5 +85,14 @@ public class EmailTemplateService {
         };
     }
 
-
+    private String getAdditionalStatusInfo(Order order, OrderStatus status) {
+        if (status == OrderStatus.ASSIGNED && order.getDriver() != null) {
+            return String.format("<p><strong>Driver:</strong> %s %s<br><strong>Phone number:</strong> %s</p>",
+                    order.getDriver().getFirstName(), order.getDriver().getLastName(), order.getDriver().getPhone());
+        }
+        if (status == OrderStatus.DELIVERED) {
+            return "<p><strong>Please rate the quality of delivery in your personal account.</strong></p>";
+        }
+        return "";
+    }
 }
