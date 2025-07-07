@@ -74,6 +74,7 @@ public class EmailTemplateService {
     }
 
 
+
     private String getStatusMessage(OrderStatus status) {
         return switch (status) {
             case CREATED -> "Your order has been created and is awaiting processing.";
@@ -94,5 +95,16 @@ public class EmailTemplateService {
             return "<p><strong>Please rate the quality of delivery in your personal account.</strong></p>";
         }
         return "";
+    }
+
+    private String getStatusDisplayName(OrderStatus status) {
+        return switch (status) {
+            case CREATED -> "Created";
+            case ASSIGNED -> "Assigned";
+            case ACCEPTED -> "Accepted";
+            case IN_PROGRESS -> "In progress";
+            case DELIVERED -> "Delivered";
+            case CANCELLED -> "Cancelled";
+        };
     }
 }
