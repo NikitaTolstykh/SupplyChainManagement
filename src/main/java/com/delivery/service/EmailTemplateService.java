@@ -94,6 +94,32 @@ public class EmailTemplateService {
                 getStatusDisplayName(newStatus), statusMessage, additionalInfo);
     }
 
+    public String createOrderAssignedToDriverEmail(Order order, User driver) {
+        return String.format("""
+        <html>
+        <body>
+            <h2>New Order Assigned</h2>
+            <p>Hello, %s!</p>
+            <p>You have been assigned a new order #%d.</p>
+            <p><strong>Order details:</strong></p>
+            <ul>
+                <li>From: %s</li>
+                <li>To: %s</li>
+                <li>Cargo type: %s</li>
+                <li>Weight: %s kg</li>
+                <li>Pickup time: %s</li>
+                <li>Comment: %s</li>
+            </ul>
+            <p>Please confirm the order in the system.</p>
+            <p>Sincerely,<br>Delivery system team</p>
+        </body>
+        </html>
+        """, driver.getFirstName(), order.getId(),
+                order.getFromAddress(), order.getToAddress(), order.getCargoType(),
+                order.getWeightKg(), order.getPickupTime(),
+                order.getComment() != null ? order.getComment() : "None");
+    }
+
     private String getStatusMessage(OrderStatus status) {
         return switch (status) {
             case CREATED -> "Your order has been created and is awaiting processing.";
