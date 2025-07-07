@@ -96,43 +96,44 @@ public class EmailTemplateService {
 
     public String createOrderAssignedToDriverEmail(Order order, User driver) {
         return String.format("""
-        <html>
-        <body>
-            <h2>New Order Assigned</h2>
-            <p>Hello, %s!</p>
-            <p>You have been assigned a new order #%d.</p>
-            <p><strong>Order details:</strong></p>
-            <ul>
-                <li>From: %s</li>
-                <li>To: %s</li>
-                <li>Cargo type: %s</li>
-                <li>Weight: %s kg</li>
-                <li>Pickup time: %s</li>
-                <li>Comment: %s</li>
-            </ul>
-            <p>Please confirm the order in the system.</p>
-            <p>Sincerely,<br>Delivery system team</p>
-        </body>
-        </html>
-        """, driver.getFirstName(), order.getId(),
+                        <html>
+                        <body>
+                            <h2>New Order Assigned</h2>
+                            <p>Hello, %s!</p>
+                            <p>You have been assigned a new order #%d.</p>
+                            <p><strong>Order details:</strong></p>
+                            <ul>
+                                <li>From: %s</li>
+                                <li>To: %s</li>
+                                <li>Cargo type: %s</li>
+                                <li>Weight: %s kg</li>
+                                <li>Pickup time: %s</li>
+                                <li>Comment: %s</li>
+                            </ul>
+                            <p>Please confirm the order in the system.</p>
+                            <p>Sincerely,<br>Delivery system team</p>
+                        </body>
+                        </html>
+                        """, driver.getFirstName(), order.getId(),
                 order.getFromAddress(), order.getToAddress(), order.getCargoType(),
                 order.getWeightKg(), order.getPickupTime(),
                 order.getComment() != null ? order.getComment() : "None");
     }
+
     public String createOrderRatingRequestEmail(Order order) {
         return String.format("""
-        <html>
-        <body>
-            <h2>Rate Your Delivery Experience</h2>
-            <p>Hello, %s!</p>
-            <p>Your order #%d has been successfully delivered!</p>
-            <p>We would greatly appreciate it if you could rate the quality of our service.</p>
-            <p>Please log in to your account and leave a review.</p>
-            <p>Thank you for choosing our service!</p>
-            <p>Sincerely,<br>Delivery system team</p>
-        </body>
-        </html>
-        """, order.getClient().getFirstName(), order.getId());
+                <html>
+                <body>
+                    <h2>Rate Your Delivery Experience</h2>
+                    <p>Hello, %s!</p>
+                    <p>Your order #%d has been successfully delivered!</p>
+                    <p>We would greatly appreciate it if you could rate the quality of our service.</p>
+                    <p>Please log in to your account and leave a review.</p>
+                    <p>Thank you for choosing our service!</p>
+                    <p>Sincerely,<br>Delivery system team</p>
+                </body>
+                </html>
+                """, order.getClient().getFirstName(), order.getId());
     }
 
     private String getStatusMessage(OrderStatus status) {
