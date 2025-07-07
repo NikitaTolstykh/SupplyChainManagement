@@ -6,6 +6,7 @@ import com.delivery.dto.OrderRequestDto;
 import com.delivery.dto.OrderStatusHistoryDto;
 import com.delivery.entity.Order;
 import com.delivery.entity.User;
+import com.delivery.event.OrderCreatedEvent;
 import com.delivery.exception.OrderNotFoundException;
 import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.OrderMapper;
@@ -13,9 +14,9 @@ import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -26,16 +27,19 @@ public class ClientServiceImpl implements ClientService {
     private final PriceCalculatorService priceCalculatorService;
     private final OrderStatusHistoryService orderStatusHistoryService;
     private final OrderStatusHistoryMapper orderStatusHistoryMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public ClientServiceImpl(OrderRepository orderRepository, UserRepository userRepository,
                              OrderMapper orderMapper, PriceCalculatorService priceCalculatorService,
-                             OrderStatusHistoryService orderStatusHistoryService, OrderStatusHistoryMapper orderStatusHistoryMapper) {
+                             OrderStatusHistoryService orderStatusHistoryService, OrderStatusHistoryMapper orderStatusHistoryMapper,
+                             ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderMapper = orderMapper;
         this.priceCalculatorService = priceCalculatorService;
         this.orderStatusHistoryService = orderStatusHistoryService;
         this.orderStatusHistoryMapper = orderStatusHistoryMapper;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -45,11 +49,13 @@ public class ClientServiceImpl implements ClientService {
 
         Order order = orderMapper.toEntity(dto);
         order.setClient(client);
-
         order.setPrice(priceCalculatorService.calculatePrice(dto.getWeightKg(), dto.getDistanceCategory()));
 
-        orderRepository.save(order);
-        return orderMapper.toDetailsDto(order);
+        Order savedOrder = orderRepository.save(order);
+
+        eventPublisher.publishEvent(new OrderCreatedEvent(savedOrder));
+
+        return orderMapper.toDetailsDto(savedOrder);
     }
 
     @Override
