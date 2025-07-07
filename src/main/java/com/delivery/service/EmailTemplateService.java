@@ -119,6 +119,21 @@ public class EmailTemplateService {
                 order.getWeightKg(), order.getPickupTime(),
                 order.getComment() != null ? order.getComment() : "None");
     }
+    public String createOrderRatingRequestEmail(Order order) {
+        return String.format("""
+        <html>
+        <body>
+            <h2>Rate Your Delivery Experience</h2>
+            <p>Hello, %s!</p>
+            <p>Your order #%d has been successfully delivered!</p>
+            <p>We would greatly appreciate it if you could rate the quality of our service.</p>
+            <p>Please log in to your account and leave a review.</p>
+            <p>Thank you for choosing our service!</p>
+            <p>Sincerely,<br>Delivery system team</p>
+        </body>
+        </html>
+        """, order.getClient().getFirstName(), order.getId());
+    }
 
     private String getStatusMessage(OrderStatus status) {
         return switch (status) {
