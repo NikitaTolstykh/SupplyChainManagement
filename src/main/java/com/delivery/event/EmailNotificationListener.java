@@ -2,6 +2,7 @@ package com.delivery.event;
 
 import com.delivery.service.EmailService;
 import com.delivery.service.EmailTemplateService;
+import com.delivery.util.OrderStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -50,5 +51,22 @@ public class EmailNotificationListener {
 
         emailService.sendHtmlEmail(event.getOrder().getClient().getEmail(), subject, body);
     }
+
+    @EventListener
+    @Async
+    public void handleOrderStatusChanged(OrderStatusChangedEvent event) {
+        log.info("Sending order status changed email to: {}", event.getOrder().getClient().getEmail());
+
+        String subject = "Order`s status has been changed #" + event.getOrder().getId();
+        String body = emailTemplateService.createOrderStatusChangeEmail(
+                event.getOrder(), event.getOldStatus(), event.getNewStatus());
+
+        emailService.sendHtmlEmail(event.getOrder().getClient().getEmail(), subject, body);
+
+        if (event.getNewStatus() == OrderStatus.DELIVERED) {
+            emailTemplateService.createOrderRatingRequestEmail(event.getOrder());
+        }
+    }
+
 
 }
