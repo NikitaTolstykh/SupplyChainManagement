@@ -73,7 +73,26 @@ public class EmailTemplateService {
                 order.getStatus());
     }
 
+    public String createOrderStatusChangeEmail(Order order, OrderStatus oldStatus, OrderStatus newStatus) {
+        String statusMessage = getStatusMessage(newStatus);
+        String additionalInfo = getAdditionalStatusInfo(order, newStatus);
 
+        return String.format("""
+                        <html>
+                        <body>
+                            <h2>Order Status Update</h2>
+                            <p>Hello, %s!</p>
+                            <p>The status of your order #%d has changed:</p>
+                            <p><strong>Previous status:</strong> %s</p>
+                            <p><strong>Current status:</strong> %s</p>
+                            <p>%s</p>
+                            %s
+                            <p>Sincerely,<br>Delivery system team</p>
+                        </body>
+                        </html>
+                        """, order.getClient().getFirstName(), order.getId(), getStatusDisplayName(oldStatus),
+                getStatusDisplayName(newStatus), statusMessage, additionalInfo);
+    }
 
     private String getStatusMessage(OrderStatus status) {
         return switch (status) {
