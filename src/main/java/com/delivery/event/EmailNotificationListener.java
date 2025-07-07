@@ -1,5 +1,6 @@
 package com.delivery.event;
 
+import com.delivery.entity.Order;
 import com.delivery.service.EmailService;
 import com.delivery.service.EmailTemplateService;
 import com.delivery.util.OrderStatus;
@@ -64,9 +65,28 @@ public class EmailNotificationListener {
         emailService.sendHtmlEmail(event.getOrder().getClient().getEmail(), subject, body);
 
         if (event.getNewStatus() == OrderStatus.DELIVERED) {
-            emailTemplateService.createOrderRatingRequestEmail(event.getOrder());
+            sendRatingRequestEmail(event.getOrder());
         }
     }
 
+    @EventListener
+    @Async
+    public void handleOrderAssignedToDriver(OrderAssignedToDriverEvent event) {
+        log.info("Sending order assigned email to driver: {}", event.getDriver().getEmail());
+
+        String subject = "A new Order assigned";
+        String body = emailTemplateService.createOrderAssignedToDriverEmail(event.getOrder(), event.getDriver());
+
+        emailService.sendHtmlEmail(event.getDriver().getEmail(), subject, body);
+    }
+
+    private void sendRatingRequestEmail(Order order) {
+        String subject = "Rate the delivery quantity";
+        String body = emailTemplateService.createOrderRatingRequestEmail(order);
+
+        emailService.sendHtmlEmail(order.getClient().getEmail(), subject, body);
+    }
 
 }
+
+
