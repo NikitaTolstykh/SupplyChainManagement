@@ -4,10 +4,12 @@ import com.delivery.entity.Order;
 import com.delivery.entity.User;
 import com.delivery.entity.Vehicle;
 import com.delivery.util.OrderStatus;
+import org.springframework.stereotype.Service;
 
+@Service
 public class EmailTemplateService {
 
-    public String getWorkerAccountEmail(User worker, String password) {
+    public String createWorkerAccountEmail(User worker, String password) {
         return String.format("""
                 <html>
                 <body>
