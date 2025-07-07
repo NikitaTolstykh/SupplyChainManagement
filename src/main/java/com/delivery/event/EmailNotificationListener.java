@@ -28,4 +28,16 @@ public class EmailNotificationListener {
 
         emailService.sendHtmlEmail(event.getWorker().getEmail(), subject, body);
     }
+
+    @EventListener
+    @Async
+    public void handleVehicleAssigned(VehicleAssignedEvent event) {
+        log.info("Sending vehicle assigned email to: {}", event.getDriver().getEmail());
+
+        String subject = "Vehicle assigning";
+        String body = emailTemplateService.createVehicleAssignmentEmail(event.getDriver(), event.getVehicle());
+
+        emailService.sendHtmlEmail(event.getDriver().getEmail(), subject, body);
+    }
+
 }
