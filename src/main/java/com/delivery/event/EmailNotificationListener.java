@@ -40,4 +40,15 @@ public class EmailNotificationListener {
         emailService.sendHtmlEmail(event.getDriver().getEmail(), subject, body);
     }
 
+    @EventListener
+    @Async
+    public void handleOrderCreated(OrderCreatedEvent event) {
+        log.info("Sending order created email to: {}", event.getOrder().getClient().getEmail());
+
+        String subject = "Order has been successfully created";
+        String body = emailTemplateService.createOrderCreatedEmail(event.getOrder());
+
+        emailService.sendHtmlEmail(event.getOrder().getClient().getEmail(), subject, body);
+    }
+
 }
