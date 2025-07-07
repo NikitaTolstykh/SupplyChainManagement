@@ -3,6 +3,7 @@ package com.delivery.service;
 import com.delivery.dto.UserRequestDto;
 import com.delivery.dto.UserResponseDto;
 import com.delivery.entity.User;
+import com.delivery.event.WorkerCreatedEvent;
 import com.delivery.exception.EmailAlreadyExistsException;
 import com.delivery.exception.WorkerNotFoundException;
 import com.delivery.mapper.UserMapper;
@@ -10,6 +11,7 @@ import com.delivery.repository.UserRepository;
 import com.delivery.util.Role;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +23,16 @@ public class AdminServiceImpl implements AdminService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final RoleValidator roleValidator;
+    private final ApplicationEventPublisher eventPublisher;
 
     public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                            UserMapper userMapper, RoleValidator roleValidator) {
+                            UserMapper userMapper, RoleValidator roleValidator,
+                            ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.roleValidator = roleValidator;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -74,7 +79,12 @@ public class AdminServiceImpl implements AdminService {
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         User newWorker = userMapper.userToEntity(userDto);
-        return userMapper.userToResponseDto(userRepository.save(newWorker));
+        User savedWorker = userRepository.save(newWorker);
+
+        String password = userDto.getPassword();
+        eventPublisher.publishEvent(new WorkerCreatedEvent(savedWorker, password));
+
+        return userMapper.userToResponseDto(savedWorker);
     }
 
     @Override
