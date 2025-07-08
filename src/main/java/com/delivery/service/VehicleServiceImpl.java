@@ -3,6 +3,7 @@ package com.delivery.service;
 import com.delivery.dto.VehicleDto;
 import com.delivery.entity.User;
 import com.delivery.entity.Vehicle;
+import com.delivery.event.VehicleAssignedEvent;
 import com.delivery.exception.DriverNotFoundException;
 import com.delivery.exception.InvalidDriverRoleException;
 import com.delivery.exception.LicensePlateAlreadyExistsException;
@@ -12,6 +13,7 @@ import com.delivery.repository.UserRepository;
 import com.delivery.repository.VehicleRepository;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +25,15 @@ public class VehicleServiceImpl implements VehicleService {
     private final VehicleMapper vehicleMapper;
     private final UserRepository userRepository;
     private final RoleValidator roleValidator;
+    private final ApplicationEventPublisher eventPublisher;
 
     public VehicleServiceImpl(VehicleRepository vehicleRepository, VehicleMapper vehicleMapper,
-                              UserRepository userRepository, RoleValidator roleValidator) {
+                              UserRepository userRepository, RoleValidator roleValidator, ApplicationEventPublisher eventPublisher) {
         this.vehicleRepository = vehicleRepository;
         this.vehicleMapper = vehicleMapper;
         this.userRepository = userRepository;
         this.roleValidator = roleValidator;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -54,7 +58,10 @@ public class VehicleServiceImpl implements VehicleService {
         Vehicle vehicle = vehicleMapper.vehicleToEntity(vehicleDto);
         vehicle.setDriver(driver);
 
-        return vehicleMapper.vehicleToDto(vehicleRepository.save(vehicle));
+        Vehicle savedVehicle = vehicleRepository.save(vehicle);
+        eventPublisher.publishEvent(new VehicleAssignedEvent(driver, savedVehicle));
+
+        return vehicleMapper.vehicleToDto(savedVehicle);
     }
 
     @Override

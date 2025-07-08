@@ -4,6 +4,7 @@ import com.delivery.dto.DispatcherOrderDetailsDto;
 import com.delivery.dto.DriverOrderListItemDto;
 import com.delivery.entity.Order;
 import com.delivery.entity.User;
+import com.delivery.event.OrderStatusChangedEvent;
 import com.delivery.exception.OrderNotFoundException;
 import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.DispatcherMapper;
@@ -12,6 +13,7 @@ import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.OrderStatus;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -24,14 +26,17 @@ public class DriverServiceImpl implements DriverService {
     private final DriverMapper driverMapper;
     private final DispatcherMapper dispatcherMapper;
     private final OrderStatusHistoryService orderStatusHistoryService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public DriverServiceImpl(OrderRepository orderRepository, UserRepository userRepository
-            , DriverMapper driverMapper, DispatcherMapper dispatcherMapper, OrderStatusHistoryService orderStatusHistoryService) {
+            , DriverMapper driverMapper, DispatcherMapper dispatcherMapper
+            , OrderStatusHistoryService orderStatusHistoryService, ApplicationEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.driverMapper = driverMapper;
         this.dispatcherMapper = dispatcherMapper;
         this.orderStatusHistoryService = orderStatusHistoryService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -63,7 +68,8 @@ public class DriverServiceImpl implements DriverService {
 
         orderStatusHistoryService.logStatusChange(order, oldStatus, OrderStatus.IN_PROGRESS, driver);
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        eventPublisher.publishEvent(new OrderStatusChangedEvent(savedOrder, oldStatus, OrderStatus.IN_PROGRESS));
     }
 
     @Override
@@ -82,7 +88,9 @@ public class DriverServiceImpl implements DriverService {
 
         orderStatusHistoryService.logStatusChange(order, oldStatus, OrderStatus.DELIVERED, driver);
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        eventPublisher.publishEvent(new OrderStatusChangedEvent(savedOrder, oldStatus, OrderStatus.DELIVERED));
     }
 
     @Override

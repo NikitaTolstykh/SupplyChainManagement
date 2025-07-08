@@ -3,6 +3,8 @@ package com.delivery.service;
 import com.delivery.dto.*;
 import com.delivery.entity.Order;
 import com.delivery.entity.User;
+import com.delivery.event.OrderAssignedToDriverEvent;
+import com.delivery.event.OrderStatusChangedEvent;
 import com.delivery.exception.DriverNotFoundException;
 import com.delivery.exception.OrderNotFoundException;
 import com.delivery.exception.UserWithEmailNotFoundException;
@@ -14,6 +16,7 @@ import com.delivery.repository.UserRepository;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -30,12 +33,14 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final PriceCalculatorService priceCalculatorService;
     private final OrderStatusHistoryMapper orderStatusHistoryMapper;
     private final OrderStatusHistoryService orderStatusHistoryService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper,
                                  UserRepository userRepository, OrderRepository orderRepository,
                                  RoleValidator roleValidator, PriceCalculatorService priceCalculatorService,
                                  OrderStatusHistoryMapper orderStatusHistoryMapper,
-                                 OrderStatusHistoryService orderStatusHistoryService) {
+                                 OrderStatusHistoryService orderStatusHistoryService,
+                                 ApplicationEventPublisher eventPublisher) {
         this.dispatcherMapper = dispatcherMapper;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
@@ -44,6 +49,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         this.priceCalculatorService = priceCalculatorService;
         this.orderStatusHistoryMapper = orderStatusHistoryMapper;
         this.orderStatusHistoryService = orderStatusHistoryService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -74,6 +80,9 @@ public class DispatcherServiceImpl implements DispatcherService {
         orderStatusHistoryService.logStatusChange(order, oldStatus, order.getStatus(), dispatcher);
 
         orderRepository.save(order);
+
+        eventPublisher.publishEvent(new OrderAssignedToDriverEvent(order, driver));
+        eventPublisher.publishEvent(new OrderStatusChangedEvent(order, oldStatus, order.getStatus()));
     }
 
     @Override
@@ -90,6 +99,8 @@ public class DispatcherServiceImpl implements DispatcherService {
         orderStatusHistoryService.logStatusChange(order, oldStatus, newStatus, dispatcher);
 
         orderRepository.save(order);
+
+        eventPublisher.publishEvent(new OrderStatusChangedEvent(order, oldStatus, newStatus));
     }
 
     @Override
@@ -98,6 +109,8 @@ public class DispatcherServiceImpl implements DispatcherService {
         Order order = findOrderById(id);
         updateOrderFields(order, dto);
         orderRepository.save(order);
+
+
     }
 
     @Override
@@ -107,9 +120,12 @@ public class DispatcherServiceImpl implements DispatcherService {
             throw new OrderNotFoundException("Order not found with id: " + id);
         }
         Order order = findOrderById(id);
+        OrderStatus oldStatus = order.getStatus();
         order.setStatus(OrderStatus.CANCELLED);
 
         orderRepository.save(order);
+
+        eventPublisher.publishEvent(new OrderStatusChangedEvent(order, oldStatus, OrderStatus.CANCELLED));
     }
 
     @Override

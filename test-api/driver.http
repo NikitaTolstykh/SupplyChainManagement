@@ -1,23 +1,23 @@
 ### GET request to example server
 POST http://localhost:8080/api/driver/orders/8/complete
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE2NTU3NjcsImV4cCI6MTc1MTc0MjE2N30.FSN-zJtuIwpxhNMrvujwxHPqDMRPC1wPh7-UxMrvuIc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTIwMDM3MjgsImV4cCI6MTc1MjA5MDEyOH0.q7dyPp5fFh_2-AnccM5V43o_M9m0ktqATsBWnIXIoOI
 
 ### GET assigned orders
 GET http://localhost:8080/api/driver/orders/assigned
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE2NTU3NjcsImV4cCI6MTc1MTc0MjE2N30.FSN-zJtuIwpxhNMrvujwxHPqDMRPC1wPh7-UxMrvuIc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTIwMDM3MjgsImV4cCI6MTc1MjA5MDEyOH0.q7dyPp5fFh_2-AnccM5V43o_M9m0ktqATsBWnIXIoOI
 
 ###GET completed orders
 GET http://localhost:8080/api/driver/orders/completed
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE2NTU3NjcsImV4cCI6MTc1MTc0MjE2N30.FSN-zJtuIwpxhNMrvujwxHPqDMRPC1wPh7-UxMrvuIc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTIwMDM3MjgsImV4cCI6MTc1MjA5MDEyOH0.q7dyPp5fFh_2-AnccM5V43o_M9m0ktqATsBWnIXIoOI
 
 ###GET orders details
 GET http://localhost:8080//api/driver/orders/10
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE2NTU3NjcsImV4cCI6MTc1MTc0MjE2N30.FSN-zJtuIwpxhNMrvujwxHPqDMRPC1wPh7-UxMrvuIc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTIwMDM3MjgsImV4cCI6MTc1MjA5MDEyOH0.q7dyPp5fFh_2-AnccM5V43o_M9m0ktqATsBWnIXIoOI
 
 ### POST accept order
-POST http://localhost:8080//api/driver/orders/10/accept
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE2NTU3NjcsImV4cCI6MTc1MTc0MjE2N30.FSN-zJtuIwpxhNMrvujwxHPqDMRPC1wPh7-UxMrvuIc
+POST http://localhost:8080//api/driver/orders/12/accept
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTIwMDM3MjgsImV4cCI6MTc1MjA5MDEyOH0.q7dyPp5fFh_2-AnccM5V43o_M9m0ktqATsBWnIXIoOI
 
 ### POST finish delivery
-POST http://localhost:8080//api/driver/orders/10/complete
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTE2NTU3NjcsImV4cCI6MTc1MTc0MjE2N30.FSN-zJtuIwpxhNMrvujwxHPqDMRPC1wPh7-UxMrvuIc
+POST http://localhost:8080//api/driver/orders/12/complete
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtAbWFpbC5jb20iLCJpYXQiOjE3NTIwMDM3MjgsImV4cCI6MTc1MjA5MDEyOH0.q7dyPp5fFh_2-AnccM5V43o_M9m0ktqATsBWnIXIoOI
