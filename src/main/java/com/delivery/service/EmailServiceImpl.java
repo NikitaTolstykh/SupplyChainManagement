@@ -21,23 +21,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Async
     @Override
-    public void sendEmail(String to, String subject, String body) {
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            message.setSubject(subject);
-            message.setText(body);
-
-            mailSender.send(message);
-            log.info("Email sent successfully to: {}", to);
-
-        } catch (Exception e) {
-            log.error("Failed to send email to: {}", to, e);
-        }
-    }
-
-    @Async
-    @Override
     public void sendHtmlEmail(String to, String subject, String htmlBody) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

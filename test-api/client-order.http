@@ -1,36 +1,36 @@
 ### GET all orders
 GET http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE5MjA5NDEsImV4cCI6MTc1MjAwNzM0MX0.zgrML5Ag03iTW3O6MdiR3gcVLuYQxlD2UR0X7zfa5eo
 
 ### GET order details
 GET http://localhost:8080/api/client/orders/10
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE5MjA5NDEsImV4cCI6MTc1MjAwNzM0MX0.zgrML5Ag03iTW3O6MdiR3gcVLuYQxlD2UR0X7zfa5eo
 
 ### POST create order
 POST http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE5MjA5NDEsImV4cCI6MTc1MjAwNzM0MX0.zgrML5Ag03iTW3O6MdiR3gcVLuYQxlD2UR0X7zfa5eo
 Content-Type: application/json
 
 {
-  "fromAddress": "ул. Daleka 6s/1,Grodzisk Mazowiecki",
-  "toAddress": "Towarowa 22, Warszawa",
+  "fromAddress": "ul. Zlota 44,Warszawa",
+  "toAddress": "ul.Daleka 6S/1, Grodzisk Mazowiecki",
   "cargoType": "Elektronika",
   "cargoDescription": "Komputer",
-  "weightKg": 10,
+  "weightKg": 20,
   "comment": "",
-  "distanceCategory": "MEDIUM",
+  "distanceCategory": "LONG",
   "paymentMethod": "CASH",
-  "pickupTime": "2025-07-04T12:00:00"
+  "pickupTime": "2025-07-09T12:00:00"
 }
 
 ### GET list available orders to rate
 GET http://localhost:8080/api/client/orders/available-for-rating
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE5MjA5NDEsImV4cCI6MTc1MjAwNzM0MX0.zgrML5Ag03iTW3O6MdiR3gcVLuYQxlD2UR0X7zfa5eo
 
 
 ### POST rate order
 POST http://localhost:8080/api/client/orders/10/rating
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE5MjA5NDEsImV4cCI6MTc1MjAwNzM0MX0.zgrML5Ag03iTW3O6MdiR3gcVLuYQxlD2UR0X7zfa5eo
 Content-Type: application/json
 
 {
@@ -40,9 +40,9 @@ Content-Type: application/json
 
 ### GET order status history
 GET http://localhost:8080/api/client/orders/10/status-history
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE5MjA5NDEsImV4cCI6MTc1MjAwNzM0MX0.zgrML5Ag03iTW3O6MdiR3gcVLuYQxlD2UR0X7zfa5eo
 
 
 ###GET client statistics
 GET http://localhost:8080/api/client/orders/statistics
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE2MzYxMzUsImV4cCI6MTc1MTcyMjUzNX0.G35K8Sf8Rl3sOqWM9UKg8mJvpP9sFOfDnTLj969P-4Q
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTE5MjA5NDEsImV4cCI6MTc1MjAwNzM0MX0.zgrML5Ag03iTW3O6MdiR3gcVLuYQxlD2UR0X7zfa5eo

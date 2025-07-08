@@ -1,24 +1,24 @@
 ### Получить все заказы
 GET http://localhost:8080/api/dispatcher/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTQ5MTQxMywiZXhwIjoxNzUxNTc3ODEzfQ.Sp_0LNeYaBOCF_n2btJWeS4gm_2fpTil3Ad2Tqu_DAY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
 
 ###
 
 ### Получить детали заказа
 GET http://localhost:8080/api/dispatcher/orders/8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTQ5MTQxMywiZXhwIjoxNzUxNTc3ODEzfQ.Sp_0LNeYaBOCF_n2btJWeS4gm_2fpTil3Ad2Tqu_DAY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
 
 ###
 
 ### Получить доступных водителей
 GET http://localhost:8080/api/dispatcher/available-drivers
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTU2NjUzOSwiZXhwIjoxNzUxNjUyOTM5fQ.EpnzXu79t1F-cxhUBrJpbLypXJ5gBEvpsvVMImq-9rM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
 
 ###
 
 ### Назначить водителя на заказ
-POST http://localhost:8080/api/dispatcher/orders/10/assign-driver
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTQ5MTQxMywiZXhwIjoxNzUxNTc3ODEzfQ.Sp_0LNeYaBOCF_n2btJWeS4gm_2fpTil3Ad2Tqu_DAY
+POST http://localhost:8080/api/dispatcher/orders/12/assign-driver
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 ### Обновить статус заказа
 PATCH http://localhost:8080/api/dispatcher/orders/8/status
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTQ5MTQxMywiZXhwIjoxNzUxNTc3ODEzfQ.Sp_0LNeYaBOCF_n2btJWeS4gm_2fpTil3Ad2Tqu_DAY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
 Content-Type: application/json
 
 {
@@ -40,7 +40,7 @@ Content-Type: application/json
 
 ### Обновить всю информацию о заказе
 PUT http://localhost:8080/api/dispatcher/orders/8
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTU2NjUzOSwiZXhwIjoxNzUxNjUyOTM5fQ.EpnzXu79t1F-cxhUBrJpbLypXJ5gBEvpsvVMImq-9rM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
 Content-Type: application/json
 
 {
@@ -60,8 +60,8 @@ Content-Type: application/json
 
 ### Удалить заказ
 PATCH http://localhost:8080/api/dispatcher/orders/8/cancel-order
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTQ5MTQxMywiZXhwIjoxNzUxNTc3ODEzfQ.Sp_0LNeYaBOCF_n2btJWeS4gm_2fpTil3Ad2Tqu_DAY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
 
 ### GET order status list
 GET http://localhost:8080/api/dispatcher/orders/10/status-history
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MTQ5MTQxMywiZXhwIjoxNzUxNTc3ODEzfQ.Sp_0LNeYaBOCF_n2btJWeS4gm_2fpTil3Ad2Tqu_DAY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGExQGdtYWlsLmNvbSIsImlhdCI6MTc1MjAwMzUwMSwiZXhwIjoxNzUyMDg5OTAxfQ.acP7xUI7EmXSd8KWDAIy84pn_Rcr2-YUscrH140WbGE
