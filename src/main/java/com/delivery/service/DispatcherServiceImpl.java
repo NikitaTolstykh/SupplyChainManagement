@@ -69,7 +69,7 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"order-detals", "avaialble-drivers"}, allEntries = true)
+    @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
         Order order = findOrderById(id);
         User driver = findAndValidateDriver(dto.getDriverId());
@@ -91,7 +91,7 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
-    @CacheEvict(value = {"order-detals", "avaialble-drivers"}, allEntries = true)
+    @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
         Order order = findOrderById(id);
         User dispatcher = getCurrentUser();

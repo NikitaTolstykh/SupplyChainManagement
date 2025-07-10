@@ -46,7 +46,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "client-orders", key = "#email")
+    @CacheEvict(value = {"client-orders", "client-statistics"}, key = "#email")
     public OrderDetailsDto createOrder(OrderRequestDto dto, String email) {
         User client = findUserByEmail(email);
 
