@@ -92,7 +92,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Override
     @Transactional
     @CacheEvict(value = {"order-detals", "avaialble-drivers"}, allEntries = true)
-
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
         Order order = findOrderById(id);
         User dispatcher = getCurrentUser();
