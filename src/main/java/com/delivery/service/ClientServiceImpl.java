@@ -14,6 +14,8 @@ import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +46,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "client-orders", key = "#email")
     public OrderDetailsDto createOrder(OrderRequestDto dto, String email) {
         User client = findUserByEmail(email);
 
@@ -59,6 +62,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Cacheable(value = "client-orders", key = "#email")
     public List<OrderListItemDto> getClientOrders(String email) {
         List<Order> order = orderRepository.findAllByClient_Email(email);
         return orderMapper.toListItemDto(order);
