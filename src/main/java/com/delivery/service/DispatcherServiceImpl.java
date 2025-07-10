@@ -16,6 +16,8 @@ import com.delivery.repository.UserRepository;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -58,6 +60,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
+    @Cacheable(value = "order-details", key = "#id")
     public DispatcherOrderDetailsDto getOrderDetails(Long id) {
         Order order = findOrderById(id);
 
@@ -66,6 +69,7 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"order-detals", "avaialble-drivers"}, allEntries = true)
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
         Order order = findOrderById(id);
         User driver = findAndValidateDriver(dto.getDriverId());
@@ -87,6 +91,8 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"order-detals", "avaialble-drivers"}, allEntries = true)
+
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
         Order order = findOrderById(id);
         User dispatcher = getCurrentUser();
@@ -105,6 +111,7 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "order-details", key = "#id")
     public void updateOrderInfo(Long id, OrderRequestDto dto) {
         Order order = findOrderById(id);
         updateOrderFields(order, dto);
@@ -115,6 +122,7 @@ public class DispatcherServiceImpl implements DispatcherService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void cancelOrder(Long id) {
         if (!orderRepository.existsById(id)) {
             throw new OrderNotFoundException("Order not found with id: " + id);
@@ -129,6 +137,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     }
 
     @Override
+    @Cacheable(value = "available-drivers")
     public List<AvailableDriverDto> availableDrivers() {
         List<OrderStatus> activeStatuses = List.of(OrderStatus.ASSIGNED, OrderStatus.IN_PROGRESS);
         List<User> availableDrivers = userRepository.findAvailableDrivers(activeStatuses);
