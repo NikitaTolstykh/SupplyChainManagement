@@ -8,6 +8,7 @@ import com.delivery.dto.projection.RouteStatsProjection;
 import com.delivery.mapper.ClientStatisticsMapper;
 import com.delivery.repository.OrderRatingRepository;
 import com.delivery.repository.OrderRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class ClientStatisticsServiceImpl implements ClientStatisticsService {
 
 
     @Override
+    @Cacheable(value = "client-statistics", key = "#clientEmail")
     public ClientStatisticsDto getClientStatistics(String clientEmail) {
         try {
             OrderStatProjection orderStats = orderRepository.getOrderStatsByClientEmail(clientEmail);
