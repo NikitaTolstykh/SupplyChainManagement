@@ -10,21 +10,26 @@ Content-Type: application/json
 ###
 ### Получить всех работников
 GET http://localhost:8080/api/admin/workers
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
+
 ###
 
 ### Получить работников по роли
 GET http://localhost:8080/api/admin/workers/role/DRIVER
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 
 
 ###
 
 ### Поиск работников
 GET http://localhost:8080/api/admin/workers/search?query=User
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 
 ###
 
 ### Получить работника по ID
 GET http://localhost:8080/api/admin/workers/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 
 ###
 
@@ -60,25 +65,25 @@ Content-Type: application/json
 
 ### Удалить работника
 DELETE http://localhost:8080/api/admin/workers/4
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 
 ###
 
 ### Получить все машины
 GET http://localhost:8080/api/admin/vehicles
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 
 ###
 
 ### Получить машину по ID
 GET http://localhost:8080/api/admin/vehicles/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 
 ###
 
 ### Добавить машину
 POST http://localhost:8080/api/admin/vehicles
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 Content-Type: application/json
 
 {
@@ -94,7 +99,7 @@ Content-Type: application/json
 
 ### Обновить машину
 PUT http://localhost:8080/api/admin/vehicles/1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4
 Content-Type: application/json
 
 {
@@ -110,4 +115,4 @@ Content-Type: application/json
 
 ### Удалить машину
 DELETE http://localhost:8080/api/admin/vehicles/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MDY5MDIzOCwiZXhwIjoxNzUwNzc2NjM4fQ.UIc67F-PgNH-lVet0Xc_xnQ2Q4LCJ9LNbuLZbf1GGqA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsImlhdCI6MTc1MjE4NTU1NiwiZXhwIjoxNzUyMjcxOTU2fQ.eE_4Y1RbRcGLJvYeDtwwErwZYiQjqphpISrO-oWLD-4

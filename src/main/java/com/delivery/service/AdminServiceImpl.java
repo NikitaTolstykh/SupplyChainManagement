@@ -11,6 +11,8 @@ import com.delivery.repository.UserRepository;
 import com.delivery.util.Role;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
+    @Cacheable(value = "get-all-workers")
     public List<UserResponseDto> getAllWorkers() {
         return userMapper.userListToResponseDto(
                 userRepository.findAllByRoleIn(List.of(Role.DRIVER, Role.DISPATCHER))
@@ -53,6 +56,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
+    @Cacheable(value = "search-workers", key = "#query")
     public List<UserResponseDto> searchWorkers(String query) {
         return userMapper.userListToResponseDto(
                 userRepository.findAllByRoleInAndFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
@@ -72,6 +76,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"get-all-workers", "search-workers"}, allEntries = true)
     public UserResponseDto addWorker(UserRequestDto userDto) {
         roleValidator.validateRolesForAdmin(userDto.getRole());
 
@@ -89,6 +94,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"get-all-workers", "search-workers"}, allEntries = true)
     public UserResponseDto editWorker(Long id, UserRequestDto userDto) {
         User workerToEdit = findUserById(id);
         roleValidator.validateRolesForAdmin(userDto.getRole());
@@ -102,6 +108,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"get-all-workers", "search-workers"}, allEntries = true)
     public void deleteWorker(Long id) {
         userRepository.delete(findUserById(id));
 
