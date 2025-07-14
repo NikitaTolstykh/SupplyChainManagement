@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse register(UserRequestDto userDto) {
         if (userRepository.findUserByEmail(userDto.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already Registered");
+            throw new RuntimeException("Email already registered");
         }
 
         roleValidator.validateRegistrationRole(userDto.getRole());

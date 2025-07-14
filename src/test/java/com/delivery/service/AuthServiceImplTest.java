@@ -10,8 +10,10 @@ import com.delivery.util.Role;
 import com.delivery.util.RoleValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
@@ -22,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class AuthServiceImplTest {
 
     @Mock
@@ -47,6 +50,8 @@ public class AuthServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        userDto = new UserRequestDto();
+
         userDto.setEmail("test@example.com");
         userDto.setPassword("password123");
         userDto.setFirstName("John");
@@ -61,7 +66,7 @@ public class AuthServiceImplTest {
 
     @Test
     void register_ShouldCreateNewUser_WhenEmailNotExists() {
-        when(userRepository.findUserByEmail("test@exaple.com")).thenReturn(Optional.empty());
+        when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
         doNothing().when(roleValidator).validateRegistrationRole(Role.CLIENT);
         when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
 
@@ -76,6 +81,7 @@ public class AuthServiceImplTest {
         assertEquals("Bearer", response.getType());
     }
 
+    @Test
     void register_ShouldThrowException_WhenEmailAlreadyExists() {
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
 
