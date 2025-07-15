@@ -124,7 +124,8 @@ public class VehicleServiceImplTest {
 
         assertNotNull(result);
         assertEquals(vehicleDto.getLicensePlate(), result.getLicensePlate());
-        verify(eventPublisher).publishEvent(any(VehicleAssignedEvent.class));    }
+        verify(eventPublisher).publishEvent(any(VehicleAssignedEvent.class));
+    }
 
     @Test
     void addVehicle_ShouldThrowException_WhenLicensePlateExists() {
@@ -152,8 +153,6 @@ public class VehicleServiceImplTest {
 
         when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
         when(vehicleRepository.existsByLicensePlate(updatedDto.getLicensePlate())).thenReturn(false);
-        when(userRepository.findById(driver.getId())).thenReturn(Optional.of(driver));
-        doNothing().when(roleValidator).validateDriverRole(driver.getRole());
         when(vehicleRepository.save(vehicle)).thenReturn(vehicle);
         when(vehicleMapper.vehicleToDto(vehicle)).thenReturn(updatedDto);
 
