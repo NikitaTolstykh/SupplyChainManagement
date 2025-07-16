@@ -1,6 +1,5 @@
 package com.delivery.config;
 
-import com.delivery.dto.DispatcherOrderDetailsDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
