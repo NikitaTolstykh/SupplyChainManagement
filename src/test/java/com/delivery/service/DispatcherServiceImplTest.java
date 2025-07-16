@@ -14,8 +14,8 @@ import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.*;
-import com.nimbusds.jose.proc.SecurityContext;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,12 +65,6 @@ public class DispatcherServiceImplTest {
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
-    @Mock
-    private SecurityContext securityContext;
-
-    @Mock
-    private Authentication authentication;
-
     @InjectMocks
     private DispatcherServiceImpl dispatcherService;
 
@@ -89,7 +83,6 @@ public class DispatcherServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        // Создание пользователей
         client = new User();
         client.setId(1L);
         client.setEmail("client@example.com");
@@ -113,7 +106,6 @@ public class DispatcherServiceImplTest {
         dispatcher.setLastName("Sidorova");
         dispatcher.setRole(Role.DISPATCHER);
 
-        // Создание транспортного средства
         vehicle = new Vehicle();
         vehicle.setId(1L);
         vehicle.setBrand("Toyota");
@@ -123,7 +115,6 @@ public class DispatcherServiceImplTest {
 
         driver.setVehicle(vehicle);
 
-        // Создание заказа
         order = new Order();
         order.setId(1L);
         order.setFromAddress("From Address");
@@ -141,7 +132,6 @@ public class DispatcherServiceImplTest {
         order.setUpdatedAt(LocalDateTime.now());
         order.setClient(client);
 
-        // Создание DTO
         orderListItemDto = new OrderListItemDto();
         orderListItemDto.setId(1L);
         orderListItemDto.setFromAddress("From Address");
@@ -200,6 +190,16 @@ public class DispatcherServiceImplTest {
         orderStatusHistoryDto.setId(1L);
         orderStatusHistoryDto.setToStatus(OrderStatus.CREATED);
         orderStatusHistoryDto.setChangedAt(LocalDateTime.now());
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn(dispatcher.getEmail());
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(securityContext);
+
+        when(userRepository.findUserByEmail(dispatcher.getEmail())).thenReturn(Optional.of(dispatcher));
     }
 
     @Test
