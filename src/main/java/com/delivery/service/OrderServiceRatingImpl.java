@@ -10,6 +10,7 @@ import com.delivery.mapper.OrderRatingMapper;
 import com.delivery.repository.OrderRatingRepository;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.OrderLookupService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -23,18 +24,22 @@ public class OrderServiceRatingImpl implements OrderRatingService {
     private final UserRepository userRepository;
     private final OrderRatingRepository orderRatingRepository;
     private final OrderRatingMapper orderRatingMapper;
+    private final OrderLookupService orderLookupService;
 
-    public OrderServiceRatingImpl(OrderRepository orderRepository, UserRepository userRepository, OrderRatingRepository orderRatingRepository, OrderRatingMapper orderRatingMapper) {
+    public OrderServiceRatingImpl(OrderRepository orderRepository, UserRepository userRepository
+            , OrderRatingRepository orderRatingRepository, OrderRatingMapper orderRatingMapper
+            , OrderLookupService orderLookupService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderRatingRepository = orderRatingRepository;
         this.orderRatingMapper = orderRatingMapper;
+        this.orderLookupService = orderLookupService;
     }
 
     @Override
     @Transactional
     public OrderRatingResponseDto rateOrder(Long orderId, OrderRatingRequestDto dto, String clientEmail) {
-        Order order = findOrderById(orderId);
+        Order order = orderLookupService.findOrderById(orderId);
         emailValidation(order, clientEmail);
         OrderRating rating = fillRatingFields(order, dto);
 
@@ -46,11 +51,6 @@ public class OrderServiceRatingImpl implements OrderRatingService {
     @Override
     public List<OrderRatingResponseDto> opinionList() {
         return orderRatingMapper.opinionList(orderRatingRepository.findAll());
-    }
-
-    private Order findOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order with id: " + orderId + " not found"));
     }
 
     private void emailValidation(Order order, String email) {
