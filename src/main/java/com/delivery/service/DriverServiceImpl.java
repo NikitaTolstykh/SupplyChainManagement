@@ -12,6 +12,7 @@ import com.delivery.mapper.DriverMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.OrderStatus;
+import com.delivery.util.UserLookupService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -27,21 +28,24 @@ public class DriverServiceImpl implements DriverService {
     private final DispatcherMapper dispatcherMapper;
     private final OrderStatusHistoryService orderStatusHistoryService;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserLookupService userLookupService;
 
     public DriverServiceImpl(OrderRepository orderRepository, UserRepository userRepository
             , DriverMapper driverMapper, DispatcherMapper dispatcherMapper
-            , OrderStatusHistoryService orderStatusHistoryService, ApplicationEventPublisher eventPublisher) {
+            , OrderStatusHistoryService orderStatusHistoryService, ApplicationEventPublisher eventPublisher
+            , UserLookupService userLookupService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.driverMapper = driverMapper;
         this.dispatcherMapper = dispatcherMapper;
         this.orderStatusHistoryService = orderStatusHistoryService;
         this.eventPublisher = eventPublisher;
+        this.userLookupService = userLookupService;
     }
 
     @Override
     public List<DriverOrderListItemDto> getAssignedOrders(String driverEmail) {
-        User driver = findUserByEmail(driverEmail);
+        User driver = userLookupService.findUserByEmail(driverEmail);
         List<Order> orders = orderRepository.findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.ASSIGNED);
         return driverMapper.toListDriverOrders(orders);
     }
@@ -58,7 +62,7 @@ public class DriverServiceImpl implements DriverService {
     public void acceptOrder(Long orderId, String driverEmail) {
         Order order = findOrderById(orderId);
         validateAccess(order, driverEmail);
-        User driver = findUserByEmail(driverEmail);
+        User driver = userLookupService.findUserByEmail(driverEmail);
 
         if (order.getStatus() != OrderStatus.ASSIGNED) {
             throw new IllegalStateException("Order is not assigned");
@@ -77,7 +81,7 @@ public class DriverServiceImpl implements DriverService {
     public void completeOrder(Long orderId, String driverEmail) {
         Order order = findOrderById(orderId);
         validateAccess(order, driverEmail);
-        User driver = findUserByEmail(driverEmail);
+        User driver = userLookupService.findUserByEmail(driverEmail);
 
         if (order.getStatus() != OrderStatus.IN_PROGRESS) {
             throw new IllegalArgumentException("You are not allowed to access this order");
@@ -95,14 +99,9 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<DriverOrderListItemDto> getCompletedOrders(String driverEmail) {
-        User driver = findUserByEmail(driverEmail);
+        User driver = userLookupService.findUserByEmail(driverEmail);
         List<Order> orders = orderRepository.findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.DELIVERED);
         return driverMapper.toListDriverOrders(orders);
-    }
-
-    private User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserWithEmailNotFoundException("Driver with email: " + email + " not found"));
     }
 
     private Order findOrderById(Long orderId) {
