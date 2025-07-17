@@ -8,6 +8,7 @@ import com.delivery.exception.EmailAlreadyExistsException;
 import com.delivery.exception.WorkerNotFoundException;
 import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.EmailValidationService;
 import com.delivery.util.Role;
 import com.delivery.util.RoleValidator;
 import com.delivery.util.UserLookupService;
@@ -28,16 +29,19 @@ public class AdminServiceImpl implements AdminService {
     private final RoleValidator roleValidator;
     private final ApplicationEventPublisher eventPublisher;
     private final UserLookupService userLookupService;
+    private final EmailValidationService emailValidationService;
 
-    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                            UserMapper userMapper, RoleValidator roleValidator,
-                            ApplicationEventPublisher eventPublisher, UserLookupService userLookupService) {
+    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder
+            , UserMapper userMapper, RoleValidator roleValidator
+            , ApplicationEventPublisher eventPublisher, UserLookupService userLookupService
+            , EmailValidationService emailValidationService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.roleValidator = roleValidator;
         this.eventPublisher = eventPublisher;
         this.userLookupService = userLookupService;
+        this.emailValidationService = emailValidationService;
     }
 
     @Override
@@ -83,7 +87,7 @@ public class AdminServiceImpl implements AdminService {
     public UserResponseDto addWorker(UserRequestDto userDto) {
         roleValidator.validateRolesForAdmin(userDto.getRole());
 
-        validateIfEmailExists(userDto.getEmail());
+        emailValidationService.validateEmailUniqueness(userDto.getEmail());
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         User newWorker = userMapper.userToEntity(userDto);
@@ -102,7 +106,7 @@ public class AdminServiceImpl implements AdminService {
         User workerToEdit = userLookupService.findUserById(id);
         roleValidator.validateRolesForAdmin(userDto.getRole());
 
-        validateEmailForUpdate(workerToEdit, userDto.getEmail());
+        emailValidationService.validateEmailForUpdate(workerToEdit, userDto.getEmail());
 
         updateWorkerData(workerToEdit, userDto);
 
@@ -116,18 +120,6 @@ public class AdminServiceImpl implements AdminService {
         User worker = userLookupService.findUserById(id);
         userRepository.delete(worker);
 
-    }
-
-    private void validateIfEmailExists(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new EmailAlreadyExistsException("This email already exists");
-        }
-    }
-
-    private void validateEmailForUpdate(User workerToEdit, String email) {
-        if (!workerToEdit.getEmail().equals(email)) {
-            validateIfEmailExists(email);
-        }
     }
 
     private void checkPasswordBeforeEditing(User user, UserRequestDto userDto) {
