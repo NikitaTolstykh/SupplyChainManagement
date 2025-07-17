@@ -13,6 +13,7 @@ import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.AccessValidationService;
 import com.delivery.util.OrderLookupService;
 import com.delivery.util.UserLookupService;
 import jakarta.transaction.Transactional;
@@ -34,11 +35,13 @@ public class ClientServiceImpl implements ClientService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserLookupService userLookupService;
     private final OrderLookupService orderLookupService;
+    private final AccessValidationService accessValidationService;
 
     public ClientServiceImpl(OrderRepository orderRepository, UserRepository userRepository,
                              OrderMapper orderMapper, PriceCalculatorService priceCalculatorService,
                              OrderStatusHistoryService orderStatusHistoryService, OrderStatusHistoryMapper orderStatusHistoryMapper,
-                             ApplicationEventPublisher eventPublisher, UserLookupService userLookupService, OrderLookupService orderLookupService) {
+                             ApplicationEventPublisher eventPublisher, UserLookupService userLookupService,
+                             OrderLookupService orderLookupService, AccessValidationService accessValidationService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderMapper = orderMapper;
@@ -48,6 +51,7 @@ public class ClientServiceImpl implements ClientService {
         this.eventPublisher = eventPublisher;
         this.userLookupService = userLookupService;
         this.orderLookupService = orderLookupService;
+        this.accessValidationService = accessValidationService;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public OrderDetailsDto getOrderDetails(Long orderId, String email) {
         Order order = orderLookupService.findOrderById(orderId);
-        emailValidation(order, email);
+        accessValidationService.validateDriverAccess(order, email);
 
         return orderMapper.toDetailsDto(order);
     }
@@ -91,18 +95,9 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId, String email) {
         Order order = orderLookupService.findOrderById(orderId);
-        emailValidation(order, email);
+        accessValidationService.validateOrderAccess(order, email);
 
         return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(orderId));
     }
-
-    private void emailValidation(Order order, String email) {
-        if (!order.getClient().getEmail().equals(email)) {
-            throw new IllegalArgumentException("Access denied to this order");
-        }
-
-    }
-
-
 }
 
