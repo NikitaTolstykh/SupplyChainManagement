@@ -13,6 +13,7 @@ import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.UserLookupService;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,11 +31,12 @@ public class ClientServiceImpl implements ClientService {
     private final OrderStatusHistoryService orderStatusHistoryService;
     private final OrderStatusHistoryMapper orderStatusHistoryMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserLookupService userLookupService;
 
     public ClientServiceImpl(OrderRepository orderRepository, UserRepository userRepository,
                              OrderMapper orderMapper, PriceCalculatorService priceCalculatorService,
                              OrderStatusHistoryService orderStatusHistoryService, OrderStatusHistoryMapper orderStatusHistoryMapper,
-                             ApplicationEventPublisher eventPublisher) {
+                             ApplicationEventPublisher eventPublisher, UserLookupService userLookupService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderMapper = orderMapper;
@@ -42,13 +44,14 @@ public class ClientServiceImpl implements ClientService {
         this.orderStatusHistoryService = orderStatusHistoryService;
         this.orderStatusHistoryMapper = orderStatusHistoryMapper;
         this.eventPublisher = eventPublisher;
+        this.userLookupService = userLookupService;
     }
 
     @Override
     @Transactional
     @CacheEvict(value = {"client-orders", "client-statistics"}, key = "#email")
     public OrderDetailsDto createOrder(OrderRequestDto dto, String email) {
-        User client = findUserByEmail(email);
+        User client = userLookupService.findUserByEmail(email);
 
         Order order = orderMapper.toEntity(dto);
         order.setClient(client);
@@ -88,11 +91,6 @@ public class ClientServiceImpl implements ClientService {
         emailValidation(order, email);
 
         return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(orderId));
-    }
-
-    private User findUserByEmail(String email) {
-        return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserWithEmailNotFoundException("User with email: " + email + " not found"));
     }
 
     private Order findOrderById(Long orderId) {
