@@ -10,6 +10,7 @@ import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.Role;
 import com.delivery.util.RoleValidator;
+import com.delivery.util.UserLookupService;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,15 +27,17 @@ public class AdminServiceImpl implements AdminService {
     private final UserMapper userMapper;
     private final RoleValidator roleValidator;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserLookupService userLookupService;
 
     public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
                             UserMapper userMapper, RoleValidator roleValidator,
-                            ApplicationEventPublisher eventPublisher) {
+                            ApplicationEventPublisher eventPublisher, UserLookupService userLookupService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.roleValidator = roleValidator;
         this.eventPublisher = eventPublisher;
+        this.userLookupService = userLookupService;
     }
 
     @Override
@@ -70,7 +73,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public UserResponseDto getWorker(Long id) {
-        User worker = findUserById(id);
+        User worker = userLookupService.findUserById(id);
         return userMapper.userToResponseDto(worker);
     }
 
@@ -96,7 +99,7 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @CacheEvict(value = {"get-all-workers", "search-workers"}, allEntries = true)
     public UserResponseDto editWorker(Long id, UserRequestDto userDto) {
-        User workerToEdit = findUserById(id);
+        User workerToEdit = userLookupService.findUserById(id);
         roleValidator.validateRolesForAdmin(userDto.getRole());
 
         validateEmailForUpdate(workerToEdit, userDto.getEmail());
@@ -110,13 +113,9 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @CacheEvict(value = {"get-all-workers", "search-workers"}, allEntries = true)
     public void deleteWorker(Long id) {
-        userRepository.delete(findUserById(id));
+        User worker = userLookupService.findUserById(id);
+        userRepository.delete(worker);
 
-    }
-
-    private User findUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new WorkerNotFoundException("Worker with id: " + id + " not found"));
     }
 
     private void validateIfEmailExists(String email) {
