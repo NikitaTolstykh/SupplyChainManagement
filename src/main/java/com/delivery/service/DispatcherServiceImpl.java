@@ -13,6 +13,7 @@ import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.OrderLookupService;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
@@ -36,13 +37,14 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final OrderStatusHistoryMapper orderStatusHistoryMapper;
     private final OrderStatusHistoryService orderStatusHistoryService;
     private final ApplicationEventPublisher eventPublisher;
+    private final OrderLookupService orderLookupService;
 
     public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper,
                                  UserRepository userRepository, OrderRepository orderRepository,
                                  RoleValidator roleValidator, PriceCalculatorService priceCalculatorService,
                                  OrderStatusHistoryMapper orderStatusHistoryMapper,
                                  OrderStatusHistoryService orderStatusHistoryService,
-                                 ApplicationEventPublisher eventPublisher) {
+                                 ApplicationEventPublisher eventPublisher, OrderLookupService orderLookupService) {
         this.dispatcherMapper = dispatcherMapper;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
@@ -52,6 +54,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         this.orderStatusHistoryMapper = orderStatusHistoryMapper;
         this.orderStatusHistoryService = orderStatusHistoryService;
         this.eventPublisher = eventPublisher;
+        this.orderLookupService = orderLookupService;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Override
     @Cacheable(value = "order-details", key = "#id")
     public DispatcherOrderDetailsDto getOrderDetails(Long id) {
-        Order order = findOrderById(id);
+        Order order = orderLookupService.findOrderById(id);
 
         return dispatcherMapper.toDispatcherOrderDetailsDto(order);
     }
@@ -71,7 +74,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Transactional
     @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
-        Order order = findOrderById(id);
+        Order order = orderLookupService.findOrderById(id);
         User driver = findAndValidateDriver(dto.getDriverId());
         User dispatcher = getCurrentUser();
 
@@ -93,7 +96,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Transactional
     @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
-        Order order = findOrderById(id);
+        Order order = orderLookupService.findOrderById(id);
         User dispatcher = getCurrentUser();
 
         OrderStatus oldStatus = order.getStatus();
@@ -112,7 +115,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Transactional
     @CacheEvict(value = "order-details", key = "#id")
     public void updateOrderInfo(Long id, OrderRequestDto dto) {
-        Order order = findOrderById(id);
+        Order order = orderLookupService.findOrderById(id);
         updateOrderFields(order, dto);
         orderRepository.save(order);
 
@@ -126,7 +129,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         if (!orderRepository.existsById(id)) {
             throw new OrderNotFoundException("Order not found with id: " + id);
         }
-        Order order = findOrderById(id);
+        Order order = orderLookupService.findOrderById(id);
         OrderStatus oldStatus = order.getStatus();
         order.setStatus(OrderStatus.CANCELLED);
 
@@ -146,11 +149,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Override
     public List<OrderStatusHistoryDto> getOrderStatusHistory(Long id) {
         return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(id));
-    }
-
-    private Order findOrderById(Long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFoundException("Order with id " + id + "not found"));
     }
 
     private void changeStatus(Order order) {
