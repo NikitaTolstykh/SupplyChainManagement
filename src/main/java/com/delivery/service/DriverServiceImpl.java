@@ -11,6 +11,7 @@ import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.DriverMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.AccessValidationService;
 import com.delivery.util.OrderLookupService;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.UserLookupService;
@@ -31,11 +32,13 @@ public class DriverServiceImpl implements DriverService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserLookupService userLookupService;
     private final OrderLookupService orderLookupService;
+    private final AccessValidationService accessValidationService;
 
     public DriverServiceImpl(OrderRepository orderRepository, UserRepository userRepository
             , DriverMapper driverMapper, DispatcherMapper dispatcherMapper
             , OrderStatusHistoryService orderStatusHistoryService, ApplicationEventPublisher eventPublisher
-            , UserLookupService userLookupService, OrderLookupService orderLookupService) {
+            , UserLookupService userLookupService, OrderLookupService orderLookupService
+            , AccessValidationService accessValidationService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.driverMapper = driverMapper;
@@ -44,6 +47,7 @@ public class DriverServiceImpl implements DriverService {
         this.eventPublisher = eventPublisher;
         this.userLookupService = userLookupService;
         this.orderLookupService = orderLookupService;
+        this.accessValidationService = accessValidationService;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public DispatcherOrderDetailsDto getOrderDetails(Long orderId, String driverEmail) {
         Order order = orderLookupService.findOrderById(orderId);
-        validateAccess(order, driverEmail);
+        accessValidationService.validateDriverAccess(order, driverEmail);
         return dispatcherMapper.toDispatcherOrderDetailsDto(order);
     }
 
@@ -64,7 +68,7 @@ public class DriverServiceImpl implements DriverService {
     @Transactional
     public void acceptOrder(Long orderId, String driverEmail) {
         Order order = orderLookupService.findOrderById(orderId);
-        validateAccess(order, driverEmail);
+        accessValidationService.validateDriverAccess(order, driverEmail);
         User driver = userLookupService.findUserByEmail(driverEmail);
 
         if (order.getStatus() != OrderStatus.ASSIGNED) {
@@ -83,7 +87,7 @@ public class DriverServiceImpl implements DriverService {
     @Transactional
     public void completeOrder(Long orderId, String driverEmail) {
         Order order = orderLookupService.findOrderById(orderId);
-        validateAccess(order, driverEmail);
+        accessValidationService.validateDriverAccess(order, driverEmail);
         User driver = userLookupService.findUserByEmail(driverEmail);
 
         if (order.getStatus() != OrderStatus.IN_PROGRESS) {
@@ -105,15 +109,5 @@ public class DriverServiceImpl implements DriverService {
         User driver = userLookupService.findUserByEmail(driverEmail);
         List<Order> orders = orderRepository.findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.DELIVERED);
         return driverMapper.toListDriverOrders(orders);
-    }
-
-    private void validateAccess(Order order, String email) {
-        if (order.getDriver() == null || !order.getDriver().getEmail().equals(email)) {
-            try {
-                throw new AccessDeniedException("You are not allowed to access this order");
-            } catch (AccessDeniedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 }
