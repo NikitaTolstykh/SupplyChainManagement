@@ -13,6 +13,7 @@ import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.OrderLookupService;
 import com.delivery.util.UserLookupService;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
@@ -32,11 +33,12 @@ public class ClientServiceImpl implements ClientService {
     private final OrderStatusHistoryMapper orderStatusHistoryMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final UserLookupService userLookupService;
+    private final OrderLookupService orderLookupService;
 
     public ClientServiceImpl(OrderRepository orderRepository, UserRepository userRepository,
                              OrderMapper orderMapper, PriceCalculatorService priceCalculatorService,
                              OrderStatusHistoryService orderStatusHistoryService, OrderStatusHistoryMapper orderStatusHistoryMapper,
-                             ApplicationEventPublisher eventPublisher, UserLookupService userLookupService) {
+                             ApplicationEventPublisher eventPublisher, UserLookupService userLookupService, OrderLookupService orderLookupService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderMapper = orderMapper;
@@ -45,6 +47,7 @@ public class ClientServiceImpl implements ClientService {
         this.orderStatusHistoryMapper = orderStatusHistoryMapper;
         this.eventPublisher = eventPublisher;
         this.userLookupService = userLookupService;
+        this.orderLookupService = orderLookupService;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public OrderDetailsDto getOrderDetails(Long orderId, String email) {
-        Order order = findOrderById(orderId);
+        Order order = orderLookupService.findOrderById(orderId);
         emailValidation(order, email);
 
         return orderMapper.toDetailsDto(order);
@@ -87,15 +90,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<OrderStatusHistoryDto> getOrderStatusHistory(Long orderId, String email) {
-        Order order = findOrderById(orderId);
+        Order order = orderLookupService.findOrderById(orderId);
         emailValidation(order, email);
 
         return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(orderId));
-    }
-
-    private Order findOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order with id: " + orderId + " not found"));
     }
 
     private void emailValidation(Order order, String email) {
