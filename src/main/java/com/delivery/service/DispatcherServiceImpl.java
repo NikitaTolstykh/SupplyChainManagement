@@ -126,7 +126,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Transactional
     @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void cancelOrder(Long id) {
-        if (!orderRepository.existsById(id)) {
+        if (!orderLookupService.existsById(id)) {
             throw new OrderNotFoundException("Order not found with id: " + id);
         }
         Order order = orderLookupService.findOrderById(id);
