@@ -11,6 +11,7 @@ import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.DriverMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.OrderLookupService;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.UserLookupService;
 import jakarta.transaction.Transactional;
@@ -29,11 +30,12 @@ public class DriverServiceImpl implements DriverService {
     private final OrderStatusHistoryService orderStatusHistoryService;
     private final ApplicationEventPublisher eventPublisher;
     private final UserLookupService userLookupService;
+    private final OrderLookupService orderLookupService;
 
     public DriverServiceImpl(OrderRepository orderRepository, UserRepository userRepository
             , DriverMapper driverMapper, DispatcherMapper dispatcherMapper
             , OrderStatusHistoryService orderStatusHistoryService, ApplicationEventPublisher eventPublisher
-            , UserLookupService userLookupService) {
+            , UserLookupService userLookupService, OrderLookupService orderLookupService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.driverMapper = driverMapper;
@@ -41,6 +43,7 @@ public class DriverServiceImpl implements DriverService {
         this.orderStatusHistoryService = orderStatusHistoryService;
         this.eventPublisher = eventPublisher;
         this.userLookupService = userLookupService;
+        this.orderLookupService = orderLookupService;
     }
 
     @Override
@@ -52,7 +55,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public DispatcherOrderDetailsDto getOrderDetails(Long orderId, String driverEmail) {
-        Order order = findOrderById(orderId);
+        Order order = orderLookupService.findOrderById(orderId);
         validateAccess(order, driverEmail);
         return dispatcherMapper.toDispatcherOrderDetailsDto(order);
     }
@@ -60,7 +63,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     @Transactional
     public void acceptOrder(Long orderId, String driverEmail) {
-        Order order = findOrderById(orderId);
+        Order order = orderLookupService.findOrderById(orderId);
         validateAccess(order, driverEmail);
         User driver = userLookupService.findUserByEmail(driverEmail);
 
@@ -79,7 +82,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     @Transactional
     public void completeOrder(Long orderId, String driverEmail) {
-        Order order = findOrderById(orderId);
+        Order order = orderLookupService.findOrderById(orderId);
         validateAccess(order, driverEmail);
         User driver = userLookupService.findUserByEmail(driverEmail);
 
@@ -102,11 +105,6 @@ public class DriverServiceImpl implements DriverService {
         User driver = userLookupService.findUserByEmail(driverEmail);
         List<Order> orders = orderRepository.findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.DELIVERED);
         return driverMapper.toListDriverOrders(orders);
-    }
-
-    private Order findOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException("Order with id: " + orderId + " not found"));
     }
 
     private void validateAccess(Order order, String email) {
