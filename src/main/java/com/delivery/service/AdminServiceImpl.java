@@ -8,10 +8,7 @@ import com.delivery.exception.EmailAlreadyExistsException;
 import com.delivery.exception.WorkerNotFoundException;
 import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
-import com.delivery.util.EmailValidationService;
-import com.delivery.util.Role;
-import com.delivery.util.RoleValidator;
-import com.delivery.util.UserLookupService;
+import com.delivery.util.*;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -24,24 +21,24 @@ import java.util.List;
 @Service
 public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final RoleValidator roleValidator;
     private final ApplicationEventPublisher eventPublisher;
     private final UserLookupService userLookupService;
     private final EmailValidationService emailValidationService;
+    private final PasswordService passwordService;
 
-    public AdminServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder
+    public AdminServiceImpl(UserRepository userRepository
             , UserMapper userMapper, RoleValidator roleValidator
             , ApplicationEventPublisher eventPublisher, UserLookupService userLookupService
-            , EmailValidationService emailValidationService) {
+            , EmailValidationService emailValidationService, PasswordService passwordService) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.roleValidator = roleValidator;
         this.eventPublisher = eventPublisher;
         this.userLookupService = userLookupService;
         this.emailValidationService = emailValidationService;
+        this.passwordService = passwordService;
     }
 
     @Override
@@ -88,7 +85,7 @@ public class AdminServiceImpl implements AdminService {
         roleValidator.validateRolesForAdmin(userDto.getRole());
 
         emailValidationService.validateEmailUniqueness(userDto.getEmail());
-        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userDto.setPassword(passwordService.encodePassword(userDto.getPassword()));
 
         User newWorker = userMapper.userToEntity(userDto);
         User savedWorker = userRepository.save(newWorker);
@@ -122,13 +119,6 @@ public class AdminServiceImpl implements AdminService {
 
     }
 
-    private void checkPasswordBeforeEditing(User user, UserRequestDto userDto) {
-        if (userDto.getPassword() != null && !userDto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        }
-    }
-
-
     private void updateWorkerData(User user, UserRequestDto userDto) {
         user.setEmail(userDto.getEmail());
         user.setFirstName(userDto.getFirstName());
@@ -136,7 +126,7 @@ public class AdminServiceImpl implements AdminService {
         user.setPhone(userDto.getPhone());
         user.setRole(userDto.getRole());
 
-        checkPasswordBeforeEditing(user, userDto);
+        passwordService.updatePasswordIfProvided(user, userDto);
     }
 
 }
