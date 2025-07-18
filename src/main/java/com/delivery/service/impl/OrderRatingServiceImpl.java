@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class OrderServiceRatingImpl implements OrderRatingService {
+public class OrderRatingServiceImpl implements OrderRatingService {
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -26,7 +26,7 @@ public class OrderServiceRatingImpl implements OrderRatingService {
     private final OrderLookupService orderLookupService;
     private final AccessValidationService accessValidationService;
 
-    public OrderServiceRatingImpl(OrderRepository orderRepository, UserRepository userRepository
+    public OrderRatingServiceImpl(OrderRepository orderRepository, UserRepository userRepository
             , OrderRatingRepository orderRatingRepository, OrderRatingMapper orderRatingMapper
             , OrderLookupService orderLookupService, AccessValidationService accessValidationService) {
         this.orderRepository = orderRepository;

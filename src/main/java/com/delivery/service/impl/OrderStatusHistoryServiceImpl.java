@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class OrderStatusHistoryImpl implements OrderStatusHistoryService {
+public class OrderStatusHistoryServiceImpl implements OrderStatusHistoryService {
     private final OrderStatusHistoryRepository orderStatusHistoryRepository;
 
-    public OrderStatusHistoryImpl(OrderStatusHistoryRepository orderStatusHistoryRepository) {
+    public OrderStatusHistoryServiceImpl(OrderStatusHistoryRepository orderStatusHistoryRepository) {
         this.orderStatusHistoryRepository = orderStatusHistoryRepository;
     }
 

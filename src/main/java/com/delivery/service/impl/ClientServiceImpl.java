@@ -82,7 +82,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public OrderDetailsDto getOrderDetails(Long orderId, String email) {
         Order order = orderLookupService.findOrderById(orderId);
-        accessValidationService.validateDriverAccess(order, email);
+        accessValidationService.validateOrderAccess(order, email);
 
         return orderMapper.toDetailsDto(order);
     }

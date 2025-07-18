@@ -16,6 +16,7 @@ import com.delivery.service.interfaces.DispatcherService;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.service.interfaces.PriceCalculatorService;
 import com.delivery.util.OrderStatus;
+import com.delivery.util.lookup.UserLookupService;
 import com.delivery.util.validation.RoleValidator;
 import com.delivery.util.lookup.OrderLookupService;
 import com.delivery.util.security.CurrentUserService;
@@ -41,6 +42,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final ApplicationEventPublisher eventPublisher;
     private final OrderLookupService orderLookupService;
     private final CurrentUserService currentUserService;
+    private final UserLookupService userLookupService;
 
     public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper
             , UserRepository userRepository, OrderRepository orderRepository
@@ -48,7 +50,7 @@ public class DispatcherServiceImpl implements DispatcherService {
             , OrderStatusHistoryMapper orderStatusHistoryMapper
             , OrderStatusHistoryService orderStatusHistoryService
             , ApplicationEventPublisher eventPublisher, OrderLookupService orderLookupService
-            , CurrentUserService currentUserService) {
+            , CurrentUserService currentUserService, UserLookupService userLookupService) {
         this.dispatcherMapper = dispatcherMapper;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
@@ -60,6 +62,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         this.eventPublisher = eventPublisher;
         this.orderLookupService = orderLookupService;
         this.currentUserService = currentUserService;
+        this.userLookupService = userLookupService;
     }
 
     @Override
@@ -123,8 +126,6 @@ public class DispatcherServiceImpl implements DispatcherService {
         Order order = orderLookupService.findOrderById(id);
         updateOrderFields(order, dto);
         orderRepository.save(order);
-
-
     }
 
     @Override
