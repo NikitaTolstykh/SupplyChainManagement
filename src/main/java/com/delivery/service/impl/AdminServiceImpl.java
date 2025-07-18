@@ -30,10 +30,10 @@ public class AdminServiceImpl implements AdminService {
     private final EmailValidationService emailValidationService;
     private final PasswordService passwordService;
 
-    public AdminServiceImpl(UserRepository userRepository
-            , UserMapper userMapper, RoleValidator roleValidator
-            , ApplicationEventPublisher eventPublisher, UserLookupService userLookupService
-            , EmailValidationService emailValidationService, PasswordService passwordService) {
+    public AdminServiceImpl(UserRepository userRepository, UserMapper userMapper,
+                            RoleValidator roleValidator, ApplicationEventPublisher eventPublisher,
+                            UserLookupService userLookupService, EmailValidationService emailValidationService,
+                            PasswordService passwordService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.roleValidator = roleValidator;

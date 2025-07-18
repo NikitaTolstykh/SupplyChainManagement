@@ -11,6 +11,10 @@ import com.delivery.mapper.VehicleMapper;
 import com.delivery.repository.UserRepository;
 import com.delivery.repository.VehicleRepository;
 import com.delivery.service.interfaces.VehicleService;
+import com.delivery.util.changeData.VehicleDataService;
+import com.delivery.util.lookup.UserLookupService;
+import com.delivery.util.lookup.VehicleLookupService;
+import com.delivery.util.validation.LicensePlateValidationService;
 import com.delivery.util.validation.RoleValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,14 +30,26 @@ public class VehicleServiceImpl implements VehicleService {
     private final UserRepository userRepository;
     private final RoleValidator roleValidator;
     private final ApplicationEventPublisher eventPublisher;
+    private final VehicleLookupService vehicleLookupService;
+    private final LicensePlateValidationService licensePlateValidationService;
+    private final VehicleDataService vehicleDataService;
+    private final UserLookupService userLookupService;
+
 
     public VehicleServiceImpl(VehicleRepository vehicleRepository, VehicleMapper vehicleMapper,
-                              UserRepository userRepository, RoleValidator roleValidator, ApplicationEventPublisher eventPublisher) {
+                              UserRepository userRepository, RoleValidator roleValidator,
+                              ApplicationEventPublisher eventPublisher, VehicleLookupService vehicleLookupService,
+                              LicensePlateValidationService licensePlateValidationService,
+                              VehicleDataService vehicleDataService, UserLookupService userLookupService) {
         this.vehicleRepository = vehicleRepository;
         this.vehicleMapper = vehicleMapper;
         this.userRepository = userRepository;
         this.roleValidator = roleValidator;
         this.eventPublisher = eventPublisher;
+        this.vehicleLookupService = vehicleLookupService;
+        this.licensePlateValidationService = licensePlateValidationService;
+        this.vehicleDataService = vehicleDataService;
+        this.userLookupService = userLookupService;
     }
 
     @Override
@@ -45,18 +61,19 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public VehicleDto getVehicle(Long id) {
-        Vehicle vehicle = findVehicleById(id);
+        Vehicle vehicle = vehicleLookupService.findVehicleById(id);
         return vehicleMapper.vehicleToDto(vehicle);
     }
 
     @Override
     @Transactional
     public VehicleDto addVehicle(VehicleDto vehicleDto) {
-        validateLicensePlateUniqueness(vehicleDto.getLicensePlate());
-        User driver = findAndValidateDriver(vehicleDto.getDriverId());
+        licensePlateValidationService.validateLicensePlateUniqueness(vehicleDto.getLicensePlate());
+        User driver = userLookupService.findUserById(vehicleDto.getDriverId());
 
-        Vehicle vehicle = vehicleMapper.vehicleToEntity(vehicleDto);
-        vehicle.setDriver(driver);
+        roleValidator.validateDriverRole(driver.getRole());
+
+        Vehicle vehicle = vehicleDataService.createVehicleWithDriver(vehicleDto, driver);
 
         Vehicle savedVehicle = vehicleRepository.save(vehicle);
         eventPublisher.publishEvent(new VehicleAssignedEvent(driver, savedVehicle));
@@ -67,11 +84,11 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public VehicleDto editVehicle(Long id, VehicleDto vehicleDto) {
-        Vehicle existingVehicle = findVehicleById(id);
+        Vehicle existingVehicle = vehicleLookupService.findVehicleById(id);
 
-        validateLicensePlateForUpdate(existingVehicle, vehicleDto.getLicensePlate());
-        updateDriverIfChanged(existingVehicle, vehicleDto.getDriverId());
-        updateVehicleFields(existingVehicle, vehicleDto);
+        licensePlateValidationService.validateLicensePlateForUpdate(existingVehicle, vehicleDto.getLicensePlate());
+        vehicleDataService.updateDriverIfChanged(existingVehicle, vehicleDto.getDriverId());
+        vehicleDataService.updateVehicleFields(existingVehicle, vehicleDto);
 
         Vehicle updatedVehicle = vehicleRepository.save(existingVehicle);
         return vehicleMapper.vehicleToDto(updatedVehicle);
@@ -80,47 +97,6 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     @Transactional
     public void deleteVehicle(Long id) {
-        vehicleRepository.delete(findVehicleById(id));
-    }
-
-    private Vehicle findVehicleById(Long id) {
-        return vehicleRepository.findById(id)
-                .orElseThrow(() -> new VehicleNotFoundException("Vehicle with id " + id + " not found"));
-    }
-
-    private User findAndValidateDriver(Long id) {
-        User driver = userRepository.findById(id)
-                .orElseThrow(() -> new DriverNotFoundException("Driver with id " + id + " not found"));
-
-        roleValidator.validateDriverRole(driver.getRole());
-
-        return driver;
-    }
-
-    private void validateLicensePlateUniqueness(String licensePlate) {
-        if (vehicleRepository.existsByLicensePlate(licensePlate)) {
-            throw new LicensePlateAlreadyExistsException("Vehicle with license plate " + licensePlate + " already exists");
-        }
-    }
-
-    private void validateLicensePlateForUpdate(Vehicle existingVehicle, String licensePlate) {
-        if (!existingVehicle.getLicensePlate().equals(licensePlate)) {
-            validateLicensePlateUniqueness(licensePlate);
-        }
-    }
-
-    private void updateDriverIfChanged(Vehicle vehicle, long newDriverId) {
-        if (!vehicle.getDriver().getId().equals(newDriverId)) {
-            User newDriver = findAndValidateDriver(newDriverId);
-            vehicle.setDriver(newDriver);
-        }
-    }
-
-    private void updateVehicleFields(Vehicle vehicle, VehicleDto vehicleDto) {
-        vehicle.setBrand(vehicleDto.getBrand());
-        vehicle.setModel(vehicleDto.getModel());
-        vehicle.setColor(vehicleDto.getColor());
-        vehicle.setLicensePlate(vehicleDto.getLicensePlate());
-        vehicle.setComment(vehicleDto.getComment());
+        vehicleRepository.delete(vehicleLookupService.findVehicleById(id));
     }
 }
