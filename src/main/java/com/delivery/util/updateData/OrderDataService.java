@@ -1,4 +1,4 @@
-package com.delivery.util.changeData;
+package com.delivery.util.updateData;
 
 import com.delivery.dto.OrderRequestDto;
 import com.delivery.entity.Order;

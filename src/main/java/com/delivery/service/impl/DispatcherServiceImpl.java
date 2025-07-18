@@ -5,8 +5,6 @@ import com.delivery.entity.Order;
 import com.delivery.entity.User;
 import com.delivery.event.OrderAssignedToDriverEvent;
 import com.delivery.event.OrderStatusChangedEvent;
-import com.delivery.exception.DriverNotFoundException;
-import com.delivery.exception.OrderNotFoundException;
 import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
@@ -16,7 +14,7 @@ import com.delivery.service.interfaces.DispatcherService;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.service.interfaces.PriceCalculatorService;
 import com.delivery.util.OrderStatus;
-import com.delivery.util.changeData.OrderDataService;
+import com.delivery.util.updateData.OrderDataService;
 import com.delivery.util.lookup.UserLookupService;
 import com.delivery.util.validation.RoleValidator;
 import com.delivery.util.lookup.OrderLookupService;
@@ -27,7 +25,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service

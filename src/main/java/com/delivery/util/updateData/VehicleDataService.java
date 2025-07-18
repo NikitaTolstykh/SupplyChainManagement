@@ -1,4 +1,4 @@
-package com.delivery.util.changeData;
+package com.delivery.util.updateData;
 
 import com.delivery.dto.VehicleDto;
 import com.delivery.entity.User;

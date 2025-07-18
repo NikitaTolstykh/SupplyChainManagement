@@ -10,6 +10,7 @@ import com.delivery.service.interfaces.AdminService;
 import com.delivery.util.*;
 import com.delivery.util.lookup.UserLookupService;
 import com.delivery.util.security.PasswordService;
+import com.delivery.util.updateData.UserDataService;
 import com.delivery.util.validation.EmailValidationService;
 import com.delivery.util.validation.RoleValidator;
 import jakarta.transaction.Transactional;
@@ -29,11 +30,12 @@ public class AdminServiceImpl implements AdminService {
     private final UserLookupService userLookupService;
     private final EmailValidationService emailValidationService;
     private final PasswordService passwordService;
+    private final UserDataService userDataService;
 
     public AdminServiceImpl(UserRepository userRepository, UserMapper userMapper,
                             RoleValidator roleValidator, ApplicationEventPublisher eventPublisher,
                             UserLookupService userLookupService, EmailValidationService emailValidationService,
-                            PasswordService passwordService) {
+                            PasswordService passwordService, UserDataService userDataService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.roleValidator = roleValidator;
@@ -41,6 +43,7 @@ public class AdminServiceImpl implements AdminService {
         this.userLookupService = userLookupService;
         this.emailValidationService = emailValidationService;
         this.passwordService = passwordService;
+        this.userDataService = userDataService;
     }
 
     @Override
@@ -107,7 +110,7 @@ public class AdminServiceImpl implements AdminService {
 
         emailValidationService.validateEmailForUpdate(workerToEdit, userDto.getEmail());
 
-        updateWorkerData(workerToEdit, userDto);
+        userDataService.updateUserFields(workerToEdit, userDto);
 
         return userMapper.userToResponseDto(userRepository.save(workerToEdit));
     }
@@ -120,15 +123,4 @@ public class AdminServiceImpl implements AdminService {
         userRepository.delete(worker);
 
     }
-
-    private void updateWorkerData(User user, UserRequestDto userDto) {
-        user.setEmail(userDto.getEmail());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPhone(userDto.getPhone());
-        user.setRole(userDto.getRole());
-
-        passwordService.updatePasswordIfProvided(user, userDto);
-    }
-
 }
