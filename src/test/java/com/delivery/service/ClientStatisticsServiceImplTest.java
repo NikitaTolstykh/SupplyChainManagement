@@ -8,8 +8,7 @@ import com.delivery.dto.projection.RouteStatsProjection;
 import com.delivery.mapper.ClientStatisticsMapper;
 import com.delivery.repository.OrderRatingRepository;
 import com.delivery.repository.OrderRepository;
-import com.delivery.service.ClientStatisticsServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
+import com.delivery.service.impl.ClientStatisticsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

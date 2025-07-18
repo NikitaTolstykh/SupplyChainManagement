@@ -1,8 +1,8 @@
 package com.delivery.controller;
 
 import com.delivery.dto.*;
-import com.delivery.service.DispatcherService;
-import com.delivery.service.OrderRatingService;
+import com.delivery.service.interfaces.DispatcherService;
+import com.delivery.service.interfaces.OrderRatingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -3,7 +3,7 @@ package com.delivery.controller;
 import com.delivery.dto.AuthResponse;
 import com.delivery.dto.LoginRequest;
 import com.delivery.dto.UserRequestDto;
-import com.delivery.service.AuthService;
+import com.delivery.service.interfaces.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
