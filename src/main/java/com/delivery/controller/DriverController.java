@@ -2,10 +2,9 @@ package com.delivery.controller;
 
 import com.delivery.dto.DispatcherOrderDetailsDto;
 import com.delivery.dto.DriverOrderListItemDto;
-import com.delivery.service.DriverService;
-import com.delivery.util.CurrentUserService;
+import com.delivery.service.interfaces.DriverService;
+import com.delivery.util.security.CurrentUserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

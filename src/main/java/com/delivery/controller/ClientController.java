@@ -1,14 +1,12 @@
 package com.delivery.controller;
 
 import com.delivery.dto.*;
-import com.delivery.service.ClientService;
-import com.delivery.service.ClientStatisticsService;
-import com.delivery.service.OrderRatingService;
-import com.delivery.util.CurrentUserService;
+import com.delivery.service.interfaces.ClientService;
+import com.delivery.service.interfaces.ClientStatisticsService;
+import com.delivery.service.interfaces.OrderRatingService;
+import com.delivery.util.security.CurrentUserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

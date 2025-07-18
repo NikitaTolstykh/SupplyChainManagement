@@ -1,8 +1,8 @@
 package com.delivery.event;
 
 import com.delivery.entity.Order;
-import com.delivery.service.EmailService;
-import com.delivery.service.EmailTemplateService;
+import com.delivery.service.interfaces.EmailService;
+import com.delivery.service.impl.EmailTemplateService;
 import com.delivery.util.OrderStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

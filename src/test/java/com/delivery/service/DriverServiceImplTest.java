@@ -11,6 +11,8 @@ import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.DriverMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.service.impl.DriverServiceImpl;
+import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.util.OrderStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
