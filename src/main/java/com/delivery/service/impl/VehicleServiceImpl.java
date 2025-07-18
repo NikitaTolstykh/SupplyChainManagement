@@ -5,12 +5,11 @@ import com.delivery.entity.User;
 import com.delivery.entity.Vehicle;
 import com.delivery.event.VehicleAssignedEvent;
 import com.delivery.mapper.VehicleMapper;
-import com.delivery.repository.UserRepository;
 import com.delivery.repository.VehicleRepository;
 import com.delivery.service.interfaces.VehicleService;
-import com.delivery.util.updateData.VehicleDataService;
 import com.delivery.util.lookup.UserLookupService;
 import com.delivery.util.lookup.VehicleLookupService;
+import com.delivery.util.updateData.VehicleDataService;
 import com.delivery.util.validation.LicensePlateValidationService;
 import com.delivery.util.validation.RoleValidator;
 import jakarta.transaction.Transactional;
@@ -24,7 +23,6 @@ import java.util.List;
 public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepository;
     private final VehicleMapper vehicleMapper;
-    private final UserRepository userRepository;
     private final RoleValidator roleValidator;
     private final ApplicationEventPublisher eventPublisher;
     private final VehicleLookupService vehicleLookupService;
@@ -34,13 +32,11 @@ public class VehicleServiceImpl implements VehicleService {
 
 
     public VehicleServiceImpl(VehicleRepository vehicleRepository, VehicleMapper vehicleMapper,
-                              UserRepository userRepository, RoleValidator roleValidator,
-                              ApplicationEventPublisher eventPublisher, VehicleLookupService vehicleLookupService,
-                              LicensePlateValidationService licensePlateValidationService,
+                              RoleValidator roleValidator, ApplicationEventPublisher eventPublisher,
+                              VehicleLookupService vehicleLookupService, LicensePlateValidationService licensePlateValidationService,
                               VehicleDataService vehicleDataService, UserLookupService userLookupService) {
         this.vehicleRepository = vehicleRepository;
         this.vehicleMapper = vehicleMapper;
-        this.userRepository = userRepository;
         this.roleValidator = roleValidator;
         this.eventPublisher = eventPublisher;
         this.vehicleLookupService = vehicleLookupService;

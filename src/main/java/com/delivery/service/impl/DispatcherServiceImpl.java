@@ -12,13 +12,12 @@ import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.service.interfaces.DispatcherService;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
-import com.delivery.service.interfaces.PriceCalculatorService;
 import com.delivery.util.OrderStatus;
-import com.delivery.util.updateData.OrderDataService;
-import com.delivery.util.lookup.UserLookupService;
-import com.delivery.util.validation.RoleValidator;
 import com.delivery.util.lookup.OrderLookupService;
+import com.delivery.util.lookup.UserLookupService;
 import com.delivery.util.security.CurrentUserService;
+import com.delivery.util.updateData.OrderDataService;
+import com.delivery.util.validation.RoleValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,7 +33,6 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final RoleValidator roleValidator;
-    private final PriceCalculatorService priceCalculatorService;
     private final OrderStatusHistoryMapper orderStatusHistoryMapper;
     private final OrderStatusHistoryService orderStatusHistoryService;
     private final ApplicationEventPublisher eventPublisher;
@@ -43,20 +41,18 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final UserLookupService userLookupService;
     private final OrderDataService orderDataService;
 
-    public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper
-            , UserRepository userRepository, OrderRepository orderRepository
-            , RoleValidator roleValidator, PriceCalculatorService priceCalculatorService
-            , OrderStatusHistoryMapper orderStatusHistoryMapper
-            , OrderStatusHistoryService orderStatusHistoryService
-            , ApplicationEventPublisher eventPublisher, OrderLookupService orderLookupService
-            , CurrentUserService currentUserService, UserLookupService userLookupService
-            , OrderDataService orderDataService) {
+    public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper,
+                                 UserRepository userRepository, OrderRepository orderRepository,
+                                 RoleValidator roleValidator, OrderStatusHistoryMapper orderStatusHistoryMapper,
+                                 OrderStatusHistoryService orderStatusHistoryService,
+                                 ApplicationEventPublisher eventPublisher, OrderLookupService orderLookupService,
+                                 CurrentUserService currentUserService, UserLookupService userLookupService,
+                                 OrderDataService orderDataService) {
         this.dispatcherMapper = dispatcherMapper;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.roleValidator = roleValidator;
-        this.priceCalculatorService = priceCalculatorService;
         this.orderStatusHistoryMapper = orderStatusHistoryMapper;
         this.orderStatusHistoryService = orderStatusHistoryService;
         this.eventPublisher = eventPublisher;

@@ -10,7 +10,6 @@ import com.delivery.event.OrderCreatedEvent;
 import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
-import com.delivery.repository.UserRepository;
 import com.delivery.service.interfaces.ClientService;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.service.interfaces.PriceCalculatorService;
@@ -28,7 +27,6 @@ import java.util.List;
 @Service
 public class ClientServiceImpl implements ClientService {
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
     private final OrderMapper orderMapper;
     private final PriceCalculatorService priceCalculatorService;
     private final OrderStatusHistoryService orderStatusHistoryService;
@@ -38,13 +36,12 @@ public class ClientServiceImpl implements ClientService {
     private final OrderLookupService orderLookupService;
     private final AccessValidationService accessValidationService;
 
-    public ClientServiceImpl(OrderRepository orderRepository, UserRepository userRepository,
-                             OrderMapper orderMapper, PriceCalculatorService priceCalculatorService,
+    public ClientServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper,
+                             PriceCalculatorService priceCalculatorService,
                              OrderStatusHistoryService orderStatusHistoryService, OrderStatusHistoryMapper orderStatusHistoryMapper,
                              ApplicationEventPublisher eventPublisher, UserLookupService userLookupService,
                              OrderLookupService orderLookupService, AccessValidationService accessValidationService) {
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
         this.orderMapper = orderMapper;
         this.priceCalculatorService = priceCalculatorService;
         this.orderStatusHistoryService = orderStatusHistoryService;

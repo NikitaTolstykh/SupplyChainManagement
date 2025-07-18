@@ -20,8 +20,8 @@ public class AuthServiceImpl implements AuthService {
     private final RoleValidator roleValidator;
     private final PasswordService passwordService;
 
-    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper
-            , JwtUtil jwtUtil, RoleValidator roleValidator, PasswordService passwordService) {
+    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper,
+                           JwtUtil jwtUtil, RoleValidator roleValidator, PasswordService passwordService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.jwtUtil = jwtUtil;

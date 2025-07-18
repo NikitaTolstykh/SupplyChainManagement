@@ -8,7 +8,6 @@ import com.delivery.event.OrderStatusChangedEvent;
 import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.DriverMapper;
 import com.delivery.repository.OrderRepository;
-import com.delivery.repository.UserRepository;
 import com.delivery.service.interfaces.DriverService;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.util.OrderStatus;
@@ -24,7 +23,6 @@ import java.util.List;
 @Service
 public class DriverServiceImpl implements DriverService {
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
     private final DriverMapper driverMapper;
     private final DispatcherMapper dispatcherMapper;
     private final OrderStatusHistoryService orderStatusHistoryService;
@@ -33,13 +31,11 @@ public class DriverServiceImpl implements DriverService {
     private final OrderLookupService orderLookupService;
     private final AccessValidationService accessValidationService;
 
-    public DriverServiceImpl(OrderRepository orderRepository, UserRepository userRepository
-            , DriverMapper driverMapper, DispatcherMapper dispatcherMapper
-            , OrderStatusHistoryService orderStatusHistoryService, ApplicationEventPublisher eventPublisher
-            , UserLookupService userLookupService, OrderLookupService orderLookupService
-            , AccessValidationService accessValidationService) {
+    public DriverServiceImpl(OrderRepository orderRepository, DriverMapper driverMapper,
+                             DispatcherMapper dispatcherMapper, OrderStatusHistoryService orderStatusHistoryService,
+                             ApplicationEventPublisher eventPublisher, UserLookupService userLookupService,
+                             OrderLookupService orderLookupService, AccessValidationService accessValidationService) {
         this.orderRepository = orderRepository;
-        this.userRepository = userRepository;
         this.driverMapper = driverMapper;
         this.dispatcherMapper = dispatcherMapper;
         this.orderStatusHistoryService = orderStatusHistoryService;

@@ -20,7 +20,8 @@ public class ClientStatisticsServiceImpl implements ClientStatisticsService {
     private final OrderRatingRepository orderRatingRepository;
     private final ClientStatisticsMapper clientStatisticsMapper;
 
-    public ClientStatisticsServiceImpl(OrderRepository orderRepository, OrderRatingRepository orderRatingRepository, ClientStatisticsMapper clientStatisticsMapper) {
+    public ClientStatisticsServiceImpl(OrderRepository orderRepository, OrderRatingRepository orderRatingRepository,
+                                       ClientStatisticsMapper clientStatisticsMapper) {
         this.orderRepository = orderRepository;
         this.orderRatingRepository = orderRatingRepository;
         this.clientStatisticsMapper = clientStatisticsMapper;
