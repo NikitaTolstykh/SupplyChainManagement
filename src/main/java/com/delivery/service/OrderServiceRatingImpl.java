@@ -10,6 +10,7 @@ import com.delivery.mapper.OrderRatingMapper;
 import com.delivery.repository.OrderRatingRepository;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.AccessValidationService;
 import com.delivery.util.OrderLookupService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -25,22 +26,24 @@ public class OrderServiceRatingImpl implements OrderRatingService {
     private final OrderRatingRepository orderRatingRepository;
     private final OrderRatingMapper orderRatingMapper;
     private final OrderLookupService orderLookupService;
+    private final AccessValidationService accessValidationService;
 
     public OrderServiceRatingImpl(OrderRepository orderRepository, UserRepository userRepository
             , OrderRatingRepository orderRatingRepository, OrderRatingMapper orderRatingMapper
-            , OrderLookupService orderLookupService) {
+            , OrderLookupService orderLookupService, AccessValidationService accessValidationService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.orderRatingRepository = orderRatingRepository;
         this.orderRatingMapper = orderRatingMapper;
         this.orderLookupService = orderLookupService;
+        this.accessValidationService = accessValidationService;
     }
 
     @Override
     @Transactional
     public OrderRatingResponseDto rateOrder(Long orderId, OrderRatingRequestDto dto, String clientEmail) {
         Order order = orderLookupService.findOrderById(orderId);
-        emailValidation(order, clientEmail);
+        accessValidationService.validateOrderAccess(order, clientEmail);
         OrderRating rating = fillRatingFields(order, dto);
 
         orderRatingRepository.save(rating);
@@ -52,13 +55,6 @@ public class OrderServiceRatingImpl implements OrderRatingService {
     public List<OrderRatingResponseDto> opinionList() {
         return orderRatingMapper.opinionList(orderRatingRepository.findAll());
     }
-
-    private void emailValidation(Order order, String email) {
-        if (!order.getClient().getEmail().equals(email)) {
-            throw new IllegalArgumentException("You are not allowed to access this order");
-        }
-    }
-
 
     private OrderRating fillRatingFields(Order order, OrderRatingRequestDto dto) {
         OrderRating rating = new OrderRating();
