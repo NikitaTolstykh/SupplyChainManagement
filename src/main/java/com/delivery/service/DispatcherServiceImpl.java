@@ -13,6 +13,7 @@ import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
+import com.delivery.util.CurrentUserService;
 import com.delivery.util.OrderLookupService;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.RoleValidator;
@@ -38,13 +39,15 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final OrderStatusHistoryService orderStatusHistoryService;
     private final ApplicationEventPublisher eventPublisher;
     private final OrderLookupService orderLookupService;
+    private final CurrentUserService currentUserService;
 
-    public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper,
-                                 UserRepository userRepository, OrderRepository orderRepository,
-                                 RoleValidator roleValidator, PriceCalculatorService priceCalculatorService,
-                                 OrderStatusHistoryMapper orderStatusHistoryMapper,
-                                 OrderStatusHistoryService orderStatusHistoryService,
-                                 ApplicationEventPublisher eventPublisher, OrderLookupService orderLookupService) {
+    public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper
+            , UserRepository userRepository, OrderRepository orderRepository
+            , RoleValidator roleValidator, PriceCalculatorService priceCalculatorService
+            , OrderStatusHistoryMapper orderStatusHistoryMapper
+            , OrderStatusHistoryService orderStatusHistoryService
+            , ApplicationEventPublisher eventPublisher, OrderLookupService orderLookupService
+            , CurrentUserService currentUserService) {
         this.dispatcherMapper = dispatcherMapper;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
@@ -55,6 +58,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         this.orderStatusHistoryService = orderStatusHistoryService;
         this.eventPublisher = eventPublisher;
         this.orderLookupService = orderLookupService;
+        this.currentUserService = currentUserService;
     }
 
     @Override
@@ -76,7 +80,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
         Order order = orderLookupService.findOrderById(id);
         User driver = findAndValidateDriver(dto.getDriverId());
-        User dispatcher = getCurrentUser();
+        User dispatcher = currentUserService.getCurrentUser();
 
         OrderStatus oldStatus = order.getStatus();
 
@@ -97,7 +101,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void updateOrderStatus(Long id, UpdateOrderStatusRequestDto dto) {
         Order order = orderLookupService.findOrderById(id);
-        User dispatcher = getCurrentUser();
+        User dispatcher = currentUserService.getCurrentUser();
 
         OrderStatus oldStatus = order.getStatus();
         OrderStatus newStatus = dto.getStatus();
@@ -176,11 +180,5 @@ public class DispatcherServiceImpl implements DispatcherService {
 
         BigDecimal newPrice = priceCalculatorService.calculatePrice(dto.getWeightKg(), dto.getDistanceCategory());
         order.setPrice(newPrice);
-    }
-
-    private User getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UserWithEmailNotFoundException("User with email: " + email + " not found"));
     }
 }
