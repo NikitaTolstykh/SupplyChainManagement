@@ -16,6 +16,7 @@ import com.delivery.service.interfaces.DispatcherService;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.service.interfaces.PriceCalculatorService;
 import com.delivery.util.OrderStatus;
+import com.delivery.util.changeData.OrderDataService;
 import com.delivery.util.lookup.UserLookupService;
 import com.delivery.util.validation.RoleValidator;
 import com.delivery.util.lookup.OrderLookupService;
@@ -43,6 +44,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     private final OrderLookupService orderLookupService;
     private final CurrentUserService currentUserService;
     private final UserLookupService userLookupService;
+    private final OrderDataService orderDataService;
 
     public DispatcherServiceImpl(DispatcherMapper dispatcherMapper, OrderMapper orderMapper
             , UserRepository userRepository, OrderRepository orderRepository
@@ -50,7 +52,8 @@ public class DispatcherServiceImpl implements DispatcherService {
             , OrderStatusHistoryMapper orderStatusHistoryMapper
             , OrderStatusHistoryService orderStatusHistoryService
             , ApplicationEventPublisher eventPublisher, OrderLookupService orderLookupService
-            , CurrentUserService currentUserService, UserLookupService userLookupService) {
+            , CurrentUserService currentUserService, UserLookupService userLookupService
+            , OrderDataService orderDataService) {
         this.dispatcherMapper = dispatcherMapper;
         this.orderMapper = orderMapper;
         this.userRepository = userRepository;
@@ -63,6 +66,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         this.orderLookupService = orderLookupService;
         this.currentUserService = currentUserService;
         this.userLookupService = userLookupService;
+        this.orderDataService = orderDataService;
     }
 
     @Override
@@ -83,14 +87,13 @@ public class DispatcherServiceImpl implements DispatcherService {
     @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void assignDriver(Long id, AssignDriverRequestDto dto) {
         Order order = orderLookupService.findOrderById(id);
-        User driver = findAndValidateDriver(dto.getDriverId());
+        User driver = userLookupService.findUserById(dto.getDriverId());
+        roleValidator.validateDriverRole(driver.getRole());
         User dispatcher = currentUserService.getCurrentUser();
 
         OrderStatus oldStatus = order.getStatus();
 
-        order.setDriver(driver);
-        order.setVehicle(driver.getVehicle());
-        changeStatus(order);
+        orderDataService.assignDriverToOrder(order, driver);
 
         orderStatusHistoryService.logStatusChange(order, oldStatus, order.getStatus(), dispatcher);
 
@@ -110,7 +113,7 @@ public class DispatcherServiceImpl implements DispatcherService {
         OrderStatus oldStatus = order.getStatus();
         OrderStatus newStatus = dto.getStatus();
 
-        order.setStatus(newStatus);
+        orderDataService.changeOrderStatus(order, newStatus);
 
         orderStatusHistoryService.logStatusChange(order, oldStatus, newStatus, dispatcher);
 
@@ -124,7 +127,7 @@ public class DispatcherServiceImpl implements DispatcherService {
     @CacheEvict(value = "order-details", key = "#id")
     public void updateOrderInfo(Long id, OrderRequestDto dto) {
         Order order = orderLookupService.findOrderById(id);
-        updateOrderFields(order, dto);
+        orderDataService.updateOrderFields(order, dto);
         orderRepository.save(order);
     }
 
@@ -132,12 +135,10 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Transactional
     @CacheEvict(value = {"order-details", "available-drivers"}, allEntries = true)
     public void cancelOrder(Long id) {
-        if (!orderLookupService.existsById(id)) {
-            throw new OrderNotFoundException("Order not found with id: " + id);
-        }
         Order order = orderLookupService.findOrderById(id);
         OrderStatus oldStatus = order.getStatus();
-        order.setStatus(OrderStatus.CANCELLED);
+
+        orderDataService.cancelOrder(order);
 
         orderRepository.save(order);
 
@@ -155,32 +156,5 @@ public class DispatcherServiceImpl implements DispatcherService {
     @Override
     public List<OrderStatusHistoryDto> getOrderStatusHistory(Long id) {
         return orderStatusHistoryMapper.toDtoList(orderStatusHistoryService.getOrderHistory(id));
-    }
-
-    private void changeStatus(Order order) {
-        if (order.getStatus() == OrderStatus.CREATED) {
-            order.setStatus(OrderStatus.ASSIGNED);
-        }
-    }
-
-    private User findAndValidateDriver(Long driverId) {
-        User driver = userRepository.findById(driverId)
-                .orElseThrow(() -> new DriverNotFoundException("Driver with id " + driverId + " not found"));
-        roleValidator.validateDriverRole(driver.getRole());
-        return driver;
-    }
-
-    private void updateOrderFields(Order order, OrderRequestDto dto) {
-        order.setFromAddress(dto.getFromAddress());
-        order.setToAddress(dto.getToAddress());
-        order.setCargoType(dto.getCargoType());
-        order.setCargoDescription(dto.getCargoDescription());
-        order.setWeightKg(dto.getWeightKg());
-        order.setComment(dto.getComment());
-        order.setPaymentMethod(dto.getPaymentMethod());
-        order.setPickupTime(dto.getPickupTime());
-
-        BigDecimal newPrice = priceCalculatorService.calculatePrice(dto.getWeightKg(), dto.getDistanceCategory());
-        order.setPrice(newPrice);
     }
 }
