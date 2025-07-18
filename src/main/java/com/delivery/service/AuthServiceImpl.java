@@ -6,6 +6,7 @@ import com.delivery.entity.User;
 import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
 import com.delivery.util.JwtUtil;
+import com.delivery.util.PasswordService;
 import com.delivery.util.RoleValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,17 +16,17 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RoleValidator roleValidator;
+    private final PasswordService passwordService;
 
-    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder
-            , JwtUtil jwtUtil, RoleValidator roleValidator) {
+    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper
+            , JwtUtil jwtUtil, RoleValidator roleValidator, PasswordService passwordService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.roleValidator = roleValidator;
+        this.passwordService = passwordService;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
 
         roleValidator.validateRegistrationRole(userDto.getRole());
 
-        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        userDto.setPassword(passwordService.encodePassword(userDto.getPassword()));
         User savedUser = userRepository.save(userMapper.userToEntity(userDto));
         String token = jwtUtil.generateToken(savedUser.getEmail());
 
@@ -50,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User with this email does not exist"));
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
+        if (!passwordService.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
         String token = jwtUtil.generateToken(user.getEmail());
