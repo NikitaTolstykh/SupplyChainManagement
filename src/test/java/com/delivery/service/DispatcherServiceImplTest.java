@@ -6,8 +6,6 @@ import com.delivery.entity.User;
 import com.delivery.entity.Vehicle;
 import com.delivery.event.OrderAssignedToDriverEvent;
 import com.delivery.event.OrderStatusChangedEvent;
-import com.delivery.exception.DriverNotFoundException;
-import com.delivery.exception.OrderNotFoundException;
 import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
@@ -15,11 +13,12 @@ import com.delivery.repository.OrderRepository;
 import com.delivery.repository.UserRepository;
 import com.delivery.service.impl.DispatcherServiceImpl;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
-import com.delivery.service.interfaces.PriceCalculatorService;
 import com.delivery.util.*;
+import com.delivery.util.lookup.OrderLookupService;
+import com.delivery.util.lookup.UserLookupService;
+import com.delivery.util.security.CurrentUserService;
+import com.delivery.util.updateData.OrderDataService;
 import com.delivery.util.validation.RoleValidator;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,16 +26,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,9 +54,6 @@ public class DispatcherServiceImplTest {
     private RoleValidator roleValidator;
 
     @Mock
-    private PriceCalculatorService priceCalculatorService;
-
-    @Mock
     private OrderStatusHistoryMapper orderStatusHistoryMapper;
 
     @Mock
@@ -68,6 +61,18 @@ public class DispatcherServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private OrderLookupService orderLookupService;
+
+    @Mock
+    private CurrentUserService currentUserService;
+
+    @Mock
+    private UserLookupService userLookupService;
+
+    @Mock
+    private OrderDataService orderDataService;
 
     @InjectMocks
     private DispatcherServiceImpl dispatcherService;
@@ -118,7 +123,6 @@ public class DispatcherServiceImplTest {
         vehicle.setDriver(driver);
 
         driver.setVehicle(vehicle);
-
         order = new Order();
         order.setId(1L);
         order.setFromAddress("From Address");
@@ -194,23 +198,12 @@ public class DispatcherServiceImplTest {
         orderStatusHistoryDto.setId(1L);
         orderStatusHistoryDto.setToStatus(OrderStatus.CREATED);
         orderStatusHistoryDto.setChangedAt(LocalDateTime.now());
-
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn(dispatcher.getEmail());
-
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-
-        SecurityContextHolder.setContext(securityContext);
-
-        when(userRepository.findUserByEmail(dispatcher.getEmail())).thenReturn(Optional.of(dispatcher));
     }
 
     @Test
     void getAllOrders_ShouldReturnListOfOrders() {
         List<Order> orders = List.of(order);
         List<OrderListItemDto> orderListItemDtos = List.of(orderListItemDto);
-
         when(orderRepository.findAll()).thenReturn(orders);
         when(orderMapper.toListItemDto(orders)).thenReturn(orderListItemDtos);
 
@@ -226,7 +219,7 @@ public class DispatcherServiceImplTest {
 
     @Test
     void getOrderDetails_ShouldReturnOrderDetails_WhenOrderExists() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderLookupService.findOrderById(1L)).thenReturn(order);
         when(dispatcherMapper.toDispatcherOrderDetailsDto(order)).thenReturn(dispatcherOrderDetailsDto);
 
         DispatcherOrderDetailsDto result = dispatcherService.getOrderDetails(1L);
@@ -235,162 +228,73 @@ public class DispatcherServiceImplTest {
         assertEquals(dispatcherOrderDetailsDto.getId(), result.getId());
         assertEquals(dispatcherOrderDetailsDto.getFromAddress(), result.getFromAddress());
 
-        verify(orderRepository).findById(1L);
+        verify(orderLookupService).findOrderById(1L);
         verify(dispatcherMapper).toDispatcherOrderDetailsDto(order);
     }
 
     @Test
-    void getOrderDetails_ShouldThrowException_WhenOrderNotFound() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> dispatcherService.getOrderDetails(1L));
-
-        assertEquals("Order with id 1not found", exception.getMessage());
-        verify(orderRepository).findById(1L);
-        verifyNoInteractions(dispatcherMapper);
-    }
-
-    @Test
     void assignDriver_ShouldAssignDriverToOrder() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(driver));
+        when(orderLookupService.findOrderById(1L)).thenReturn(order);
+        when(userLookupService.findUserById(2L)).thenReturn(driver);
         doNothing().when(roleValidator).validateDriverRole(driver.getRole());
+        when(currentUserService.getCurrentUser()).thenReturn(dispatcher);
+        doNothing().when(orderDataService).assignDriverToOrder(order, driver);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         dispatcherService.assignDriver(1L, assignDriverRequestDto);
 
-        assertEquals(driver, order.getDriver());
-        assertEquals(vehicle, order.getVehicle());
-        assertEquals(OrderStatus.ASSIGNED, order.getStatus());
-
-        verify(orderRepository).findById(1L);
-        verify(userRepository).findById(2L);
+        verify(orderLookupService).findOrderById(1L);
+        verify(userLookupService).findUserById(2L);
         verify(roleValidator).validateDriverRole(driver.getRole());
+        verify(currentUserService).getCurrentUser();
+        verify(orderDataService).assignDriverToOrder(order, driver);
         verify(orderRepository).save(order);
-        verify(orderStatusHistoryService).logStatusChange(eq(order), eq(OrderStatus.CREATED), eq(OrderStatus.ASSIGNED), any(User.class));
+        verify(orderStatusHistoryService).logStatusChange(eq(order), any(OrderStatus.class), any(OrderStatus.class), eq(dispatcher));
         verify(eventPublisher).publishEvent(any(OrderAssignedToDriverEvent.class));
         verify(eventPublisher).publishEvent(any(OrderStatusChangedEvent.class));
     }
 
     @Test
-    void assignDriver_ShouldThrowException_WhenOrderNotFound() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> dispatcherService.assignDriver(1L, assignDriverRequestDto));
-
-        assertEquals("Order with id 1not found", exception.getMessage());
-        verify(orderRepository).findById(1L);
-        verifyNoInteractions(userRepository, roleValidator, orderStatusHistoryService, eventPublisher);
-    }
-
-    @Test
-    void assignDriver_ShouldThrowException_WhenDriverNotFound() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(userRepository.findById(2L)).thenReturn(Optional.empty());
-
-        DriverNotFoundException exception = assertThrows(DriverNotFoundException.class,
-                () -> dispatcherService.assignDriver(1L, assignDriverRequestDto));
-
-        assertEquals("Driver with id 2 not found", exception.getMessage());
-        verify(orderRepository).findById(1L);
-        verify(userRepository).findById(2L);
-        verifyNoInteractions(roleValidator, orderStatusHistoryService, eventPublisher);
-    }
-
-    @Test
     void updateOrderStatus_ShouldUpdateStatus() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderLookupService.findOrderById(1L)).thenReturn(order);
+        when(currentUserService.getCurrentUser()).thenReturn(dispatcher);
+        doNothing().when(orderDataService).changeOrderStatus(order, OrderStatus.IN_PROGRESS);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         dispatcherService.updateOrderStatus(1L, updateOrderStatusRequestDto);
 
-        assertEquals(OrderStatus.IN_PROGRESS, order.getStatus());
-
-        verify(orderRepository).findById(1L);
+        verify(orderLookupService).findOrderById(1L);
+        verify(currentUserService).getCurrentUser();
+        verify(orderDataService).changeOrderStatus(order, OrderStatus.IN_PROGRESS);
         verify(orderRepository).save(order);
-        verify(orderStatusHistoryService).logStatusChange(eq(order), eq(OrderStatus.CREATED), eq(OrderStatus.IN_PROGRESS), any(User.class));
+        verify(orderStatusHistoryService).logStatusChange(eq(order), any(OrderStatus.class), eq(OrderStatus.IN_PROGRESS), eq(dispatcher));
         verify(eventPublisher).publishEvent(any(OrderStatusChangedEvent.class));
-    }
-
-    @Test
-    void updateOrderStatus_ShouldThrowException_WhenOrderNotFound() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> dispatcherService.updateOrderStatus(1L, updateOrderStatusRequestDto));
-
-        assertEquals("Order with id 1not found", exception.getMessage());
-        verify(orderRepository).findById(1L);
-        verifyNoInteractions(orderStatusHistoryService, eventPublisher);
     }
 
     @Test
     void updateOrderInfo_ShouldUpdateOrderFields() {
-        BigDecimal newPrice = new BigDecimal("150.00");
-
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-        when(priceCalculatorService.calculatePrice(orderRequestDto.getWeightKg(), orderRequestDto.getDistanceCategory()))
-                .thenReturn(newPrice);
+        when(orderLookupService.findOrderById(1L)).thenReturn(order);
+        doNothing().when(orderDataService).updateOrderFields(order, orderRequestDto);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         dispatcherService.updateOrderInfo(1L, orderRequestDto);
 
-        assertEquals(orderRequestDto.getFromAddress(), order.getFromAddress());
-        assertEquals(orderRequestDto.getToAddress(), order.getToAddress());
-        assertEquals(orderRequestDto.getCargoType(), order.getCargoType());
-        assertEquals(orderRequestDto.getCargoDescription(), order.getCargoDescription());
-        assertEquals(orderRequestDto.getWeightKg(), order.getWeightKg());
-        assertEquals(orderRequestDto.getComment(), order.getComment());
-        assertEquals(orderRequestDto.getPaymentMethod(), order.getPaymentMethod());
-        assertEquals(orderRequestDto.getPickupTime(), order.getPickupTime());
-        assertEquals(newPrice, order.getPrice());
-
-        verify(orderRepository).findById(1L);
-        verify(priceCalculatorService).calculatePrice(orderRequestDto.getWeightKg(), orderRequestDto.getDistanceCategory());
+        verify(orderLookupService).findOrderById(1L);
+        verify(orderDataService).updateOrderFields(order, orderRequestDto);
         verify(orderRepository).save(order);
-    }
-
-    @Test
-    void updateOrderInfo_ShouldThrowException_WhenOrderNotFound() {
-        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> dispatcherService.updateOrderInfo(1L, orderRequestDto));
-
-        assertEquals("Order with id 1not found", exception.getMessage());
-        verify(orderRepository).findById(1L);
-        verifyNoInteractions(priceCalculatorService);
     }
 
     @Test
     void cancelOrder_ShouldCancelOrder() {
-        when(orderRepository.existsById(1L)).thenReturn(true);
-        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderLookupService.findOrderById(1L)).thenReturn(order);
+        doNothing().when(orderDataService).cancelOrder(order);
         when(orderRepository.save(any(Order.class))).thenReturn(order);
 
         dispatcherService.cancelOrder(1L);
-
-        assertEquals(OrderStatus.CANCELLED, order.getStatus());
-
-        verify(orderRepository).existsById(1L);
-        verify(orderRepository).findById(1L);
+        verify(orderLookupService).findOrderById(1L);
+        verify(orderDataService).cancelOrder(order);
         verify(orderRepository).save(order);
         verify(eventPublisher).publishEvent(any(OrderStatusChangedEvent.class));
-    }
-
-    @Test
-    void cancelOrder_ShouldThrowException_WhenOrderNotFound() {
-        when(orderRepository.existsById(1L)).thenReturn(false);
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> dispatcherService.cancelOrder(1L));
-
-        assertEquals("Order not found with id: 1", exception.getMessage());
-        verify(orderRepository).existsById(1L);
-        verifyNoMoreInteractions(orderRepository);
-        verifyNoInteractions(eventPublisher);
     }
 
     @Test

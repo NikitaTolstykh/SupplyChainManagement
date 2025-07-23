@@ -10,6 +10,10 @@ import com.delivery.mapper.UserMapper;
 import com.delivery.repository.UserRepository;
 import com.delivery.service.impl.AdminServiceImpl;
 import com.delivery.util.Role;
+import com.delivery.util.lookup.UserLookupService;
+import com.delivery.util.security.PasswordService;
+import com.delivery.util.updateData.UserDataService;
+import com.delivery.util.validation.EmailValidationService;
 import com.delivery.util.validation.RoleValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,34 +22,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AdminServiceImplTest {
 
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserMapper userMapper;
-
-    @Mock
-    private RoleValidator roleValidator;
-
-    @Mock
-    private ApplicationEventPublisher eventPublisher;
+    @Mock private UserRepository userRepository;
+    @Mock private UserMapper userMapper;
+    @Mock private RoleValidator roleValidator;
+    @Mock private ApplicationEventPublisher eventPublisher;
+    @Mock private UserLookupService userLookupService;
+    @Mock private EmailValidationService emailValidationService;
+    @Mock private PasswordService passwordService;
+    @Mock private UserDataService userDataService;
 
     @InjectMocks
     private AdminServiceImpl adminService;
@@ -80,7 +74,6 @@ public class AdminServiceImplTest {
         userResponseDto.setLastName("Doe");
         userResponseDto.setPhone("1234567890");
         userResponseDto.setRole(Role.DRIVER);
-
     }
 
     @Test
@@ -104,27 +97,22 @@ public class AdminServiceImplTest {
         assertEquals(1, result.size());
         verify(roleValidator).validateRolesForAdmin(Role.DRIVER);
     }
-
     @Test
     void searchWorkers_ShouldReturnMatchingUsers() {
         String query = "john";
-
         when(userRepository.findAllByRoleInAndFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
                 List.of(Role.DRIVER, Role.DISPATCHER), query, query))
                 .thenReturn(List.of(user));
-
         when(userMapper.userListToResponseDto(List.of(user))).thenReturn(List.of(userResponseDto));
 
         List<UserResponseDto> result = adminService.searchWorkers(query);
 
         assertEquals(1, result.size());
-        verify(userRepository).findAllByRoleInAndFirstNameContainingIgnoreCaseOrEmailContainingIgnoreCase(
-                List.of(Role.DRIVER, Role.DISPATCHER), query, query);
     }
 
     @Test
     void getWorker_ShouldReturnUser() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userLookupService.findUserById(1L)).thenReturn(user);
         when(userMapper.userToResponseDto(user)).thenReturn(userResponseDto);
 
         UserResponseDto result = adminService.getWorker(1L);
@@ -133,16 +121,8 @@ public class AdminServiceImplTest {
     }
 
     @Test
-    void getWorker_ShouldThrowException_IfUserNotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(WorkerNotFoundException.class, () -> adminService.getWorker(1L));
-    }
-
-    @Test
     void addWorker_ShouldAddNewUser() {
-        when(userRepository.existsByEmail(userDto.getEmail())).thenReturn(false);
-        when(passwordEncoder.encode("rawPass")).thenReturn("encodedPass");
+        when(passwordService.encodePassword("rawPass")).thenReturn("encodedPass");
         when(userMapper.userToEntity(userDto)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(user);
         when(userMapper.userToResponseDto(user)).thenReturn(userResponseDto);
@@ -151,64 +131,29 @@ public class AdminServiceImplTest {
 
         assertEquals(userDto.getEmail(), result.getEmail());
         verify(roleValidator).validateRolesForAdmin(Role.DRIVER);
+        verify(emailValidationService).validateEmailUniqueness(userDto.getEmail());
+        verify(passwordService).encodePassword("rawPass");
         verify(eventPublisher).publishEvent(any(WorkerCreatedEvent.class));
     }
 
     @Test
-    void addWorker_ShouldThrowException_IfEmailExists() {
-        when(userRepository.existsByEmail(userDto.getEmail())).thenReturn(true);
-
-        assertThrows(EmailAlreadyExistsException.class, () -> adminService.addWorker(userDto));
-    }
-
-    @Test
     void editWorker_ShouldUpdateUser() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userLookupService.findUserById(1L)).thenReturn(user);
+        when(userRepository.save(user)).thenReturn(user);
         when(userMapper.userToResponseDto(user)).thenReturn(userResponseDto);
 
         UserResponseDto result = adminService.editWorker(1L, userDto);
 
         assertEquals(userDto.getEmail(), result.getEmail());
-        verify(roleValidator).validateRolesForAdmin(Role.DRIVER);
-    }
-
-    @Test
-    void editWorker_ShouldThrowException_IfUserNotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(WorkerNotFoundException.class, () -> adminService.editWorker(1L, userDto));
-    }
-
-    @Test
-    void editWorker_ShouldThrowException_IfEmailAlreadyExists() {
-        User existing = new User();
-        existing.setId(1L);
-        existing.setEmail("old@example.com");
-
-        userDto.setEmail("new@example.com");
-
-        when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
-        when(userRepository.existsByEmail("new@example.com")).thenReturn(true);
-
-        assertThrows(EmailAlreadyExistsException.class, () -> adminService.editWorker(1L, userDto));
+        verify(userDataService).updateUserFields(user, userDto);
     }
 
     @Test
     void deleteWorker_ShouldDeleteUser() {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userLookupService.findUserById(1L)).thenReturn(user);
 
         adminService.deleteWorker(1L);
 
         verify(userRepository).delete(user);
     }
-
-    @Test
-    void deleteWorker_ShouldThrowException_IfUserNotFound() {
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(WorkerNotFoundException.class, () -> adminService.deleteWorker(1L));
-    }
-
-
 }

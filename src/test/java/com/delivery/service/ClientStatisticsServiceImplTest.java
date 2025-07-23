@@ -82,4 +82,3 @@ class ClientStatisticsServiceImplTest {
         verifyNoMoreInteractions(orderRatingRepository, clientStatisticsMapper);
     }
 }
-
