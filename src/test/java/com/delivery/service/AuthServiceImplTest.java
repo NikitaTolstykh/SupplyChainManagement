@@ -8,6 +8,7 @@ import com.delivery.repository.UserRepository;
 import com.delivery.service.impl.AuthServiceImpl;
 import com.delivery.util.JwtUtil;
 import com.delivery.util.Role;
+import com.delivery.util.security.PasswordService;
 import com.delivery.util.validation.RoleValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,15 +16,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceImplTest {
@@ -35,13 +34,13 @@ public class AuthServiceImplTest {
     private UserMapper userMapper;
 
     @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
     private JwtUtil jwtUtil;
 
     @Mock
     private RoleValidator roleValidator;
+
+    @Mock
+    private PasswordService passwordService;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -52,7 +51,6 @@ public class AuthServiceImplTest {
     @BeforeEach
     void setUp() {
         userDto = new UserRequestDto();
-
         userDto.setEmail("test@example.com");
         userDto.setPassword("password123");
         userDto.setFirstName("John");
@@ -69,8 +67,7 @@ public class AuthServiceImplTest {
     void register_ShouldCreateNewUser_WhenEmailNotExists() {
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
         doNothing().when(roleValidator).validateRegistrationRole(Role.CLIENT);
-        when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
-
+        when(passwordService.encodePassword("password123")).thenReturn("encodedPassword");
 
         when(userMapper.userToEntity(any(UserRequestDto.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -95,7 +92,7 @@ public class AuthServiceImplTest {
     @Test
     void login_ShouldReturnToken_WhenCredentialsAreValid() {
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("password123", "encodedPassword")).thenReturn(true);
+        when(passwordService.matches("password123", "encodedPassword")).thenReturn(true);
         when(jwtUtil.generateToken("test@example.com")).thenReturn("jwt-token");
 
         AuthResponse response = authService.login("test@example.com", "password123");
@@ -115,8 +112,7 @@ public class AuthServiceImplTest {
     @Test
     void login_ShouldThrowException_WhenPasswordIsWrong() {
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("wrongPassword", "encodedPassword")).thenReturn(false);
-
+        when(passwordService.matches("wrongPassword", "encodedPassword")).thenReturn(false);
         assertThrows(RuntimeException.class,
                 () -> authService.login("test@example.com", "wrongPassword"));
     }

@@ -4,14 +4,14 @@ import com.delivery.dto.VehicleDto;
 import com.delivery.entity.User;
 import com.delivery.entity.Vehicle;
 import com.delivery.event.VehicleAssignedEvent;
-import com.delivery.exception.DriverNotFoundException;
-import com.delivery.exception.LicensePlateAlreadyExistsException;
-import com.delivery.exception.VehicleNotFoundException;
 import com.delivery.mapper.VehicleMapper;
-import com.delivery.repository.UserRepository;
 import com.delivery.repository.VehicleRepository;
 import com.delivery.service.impl.VehicleServiceImpl;
 import com.delivery.util.Role;
+import com.delivery.util.lookup.UserLookupService;
+import com.delivery.util.lookup.VehicleLookupService;
+import com.delivery.util.updateData.VehicleDataService;
+import com.delivery.util.validation.LicensePlateValidationService;
 import com.delivery.util.validation.RoleValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,11 +22,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,13 +37,22 @@ public class VehicleServiceImplTest {
     private VehicleMapper vehicleMapper;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private RoleValidator roleValidator;
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private VehicleLookupService vehicleLookupService;
+
+    @Mock
+    private LicensePlateValidationService licensePlateValidationService;
+
+    @Mock
+    private VehicleDataService vehicleDataService;
+
+    @Mock
+    private UserLookupService userLookupService;
 
     @InjectMocks
     private VehicleServiceImpl vehicleService;
@@ -67,7 +74,6 @@ public class VehicleServiceImplTest {
         vehicle.setColor("White");
         vehicle.setLicensePlate("ABC123");
         vehicle.setDriver(driver);
-
 
         vehicleDto = new VehicleDto();
         vehicleDto.setId(1L);
@@ -95,29 +101,22 @@ public class VehicleServiceImplTest {
 
     @Test
     void getVehicle_ShouldReturnVehicleDto_WhenVehicleExists() {
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
+        when(vehicleLookupService.findVehicleById(1L)).thenReturn(vehicle);
         when(vehicleMapper.vehicleToDto(vehicle)).thenReturn(vehicleDto);
 
         VehicleDto result = vehicleService.getVehicle(1L);
 
         assertNotNull(result);
         assertEquals(vehicleDto.getId(), result.getId());
+        verify(vehicleLookupService).findVehicleById(1L);
+        verify(vehicleMapper).vehicleToDto(vehicle);
     }
-
-    @Test
-    void getVehicle_ShouldThrowException_WhenVehicleNotFound() {
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(VehicleNotFoundException.class, () -> vehicleService.getVehicle(1L));
-    }
-
     @Test
     void addVehicle_ShouldSaveVehicleAndPublishEvent() {
-        when(vehicleRepository.existsByLicensePlate(vehicleDto.getLicensePlate())).thenReturn(false);
-        when(userRepository.findById(driver.getId())).thenReturn(Optional.of(driver));
+        doNothing().when(licensePlateValidationService).validateLicensePlateUniqueness(vehicleDto.getLicensePlate());
+        when(userLookupService.findUserById(driver.getId())).thenReturn(driver);
         doNothing().when(roleValidator).validateDriverRole(driver.getRole());
-
-        when(vehicleMapper.vehicleToEntity(vehicleDto)).thenReturn(vehicle);
+        when(vehicleDataService.createVehicleWithDriver(vehicleDto, driver)).thenReturn(vehicle);
         when(vehicleRepository.save(any(Vehicle.class))).thenReturn(vehicle);
         when(vehicleMapper.vehicleToDto(vehicle)).thenReturn(vehicleDto);
 
@@ -125,22 +124,13 @@ public class VehicleServiceImplTest {
 
         assertNotNull(result);
         assertEquals(vehicleDto.getLicensePlate(), result.getLicensePlate());
+        verify(licensePlateValidationService).validateLicensePlateUniqueness(vehicleDto.getLicensePlate());
+        verify(userLookupService).findUserById(driver.getId());
+        verify(roleValidator).validateDriverRole(driver.getRole());
+        verify(vehicleDataService).createVehicleWithDriver(vehicleDto, driver);
+        verify(vehicleRepository).save(vehicle);
         verify(eventPublisher).publishEvent(any(VehicleAssignedEvent.class));
-    }
-
-    @Test
-    void addVehicle_ShouldThrowException_WhenLicensePlateExists() {
-        when(vehicleRepository.existsByLicensePlate(vehicleDto.getLicensePlate())).thenReturn(true);
-
-        assertThrows(LicensePlateAlreadyExistsException.class, () -> vehicleService.addVehicle(vehicleDto));
-    }
-
-    @Test
-    void addVehicle_ShouldThrowException_WhenDriverNotFound() {
-        when(vehicleRepository.existsByLicensePlate(vehicleDto.getLicensePlate())).thenReturn(false);
-        when(userRepository.findById(driver.getId())).thenReturn(Optional.empty());
-
-        assertThrows(DriverNotFoundException.class, () -> vehicleService.addVehicle(vehicleDto));
+        verify(vehicleMapper).vehicleToDto(vehicle);
     }
 
     @Test
@@ -152,30 +142,31 @@ public class VehicleServiceImplTest {
         updatedDto.setLicensePlate("XYZ789");
         updatedDto.setDriverId(driver.getId());
 
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
-        when(vehicleRepository.existsByLicensePlate(updatedDto.getLicensePlate())).thenReturn(false);
+        when(vehicleLookupService.findVehicleById(1L)).thenReturn(vehicle);
+        doNothing().when(licensePlateValidationService).validateLicensePlateForUpdate(vehicle, updatedDto.getLicensePlate());
+        doNothing().when(vehicleDataService).updateDriverIfChanged(vehicle, updatedDto.getDriverId());
+        doNothing().when(vehicleDataService).updateVehicleFields(vehicle, updatedDto);
         when(vehicleRepository.save(vehicle)).thenReturn(vehicle);
         when(vehicleMapper.vehicleToDto(vehicle)).thenReturn(updatedDto);
 
         VehicleDto result = vehicleService.editVehicle(1L, updatedDto);
 
         assertEquals(updatedDto.getBrand(), result.getBrand());
+        verify(vehicleLookupService).findVehicleById(1L);
+        verify(licensePlateValidationService).validateLicensePlateForUpdate(vehicle, updatedDto.getLicensePlate());
+        verify(vehicleDataService).updateDriverIfChanged(vehicle, updatedDto.getDriverId());
+        verify(vehicleDataService).updateVehicleFields(vehicle, updatedDto);
+        verify(vehicleRepository).save(vehicle);
+        verify(vehicleMapper).vehicleToDto(vehicle);
     }
 
     @Test
     void deleteVehicle_ShouldDeleteVehicle_WhenVehicleExists() {
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.of(vehicle));
+        when(vehicleLookupService.findVehicleById(1L)).thenReturn(vehicle);
 
         vehicleService.deleteVehicle(1L);
 
+        verify(vehicleLookupService).findVehicleById(1L);
         verify(vehicleRepository).delete(vehicle);
     }
-
-    @Test
-    void deleteVehicle_ShouldThrowException_WhenVehicleNotFound() {
-        when(vehicleRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(VehicleNotFoundException.class, () -> vehicleService.deleteVehicle(1L));
-    }
-
 }

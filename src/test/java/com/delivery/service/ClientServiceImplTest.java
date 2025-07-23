@@ -7,12 +7,9 @@ import com.delivery.dto.OrderStatusHistoryDto;
 import com.delivery.entity.Order;
 import com.delivery.entity.User;
 import com.delivery.event.OrderCreatedEvent;
-import com.delivery.exception.OrderNotFoundException;
-import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.OrderMapper;
 import com.delivery.mapper.OrderStatusHistoryMapper;
 import com.delivery.repository.OrderRepository;
-import com.delivery.repository.UserRepository;
 import com.delivery.service.impl.ClientServiceImpl;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.service.interfaces.PriceCalculatorService;
@@ -20,6 +17,9 @@ import com.delivery.util.DistanceCategory;
 import com.delivery.util.OrderStatus;
 import com.delivery.util.PaymentMethod;
 import com.delivery.util.Role;
+import com.delivery.util.lookup.OrderLookupService;
+import com.delivery.util.lookup.UserLookupService;
+import com.delivery.util.validation.AccessValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,11 +31,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -44,9 +42,6 @@ public class ClientServiceImplTest {
 
     @Mock
     private OrderRepository orderRepository;
-
-    @Mock
-    private UserRepository userRepository;
 
     @Mock
     private OrderMapper orderMapper;
@@ -62,6 +57,15 @@ public class ClientServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private UserLookupService userLookupService;
+
+    @Mock
+    private OrderLookupService orderLookupService;
+
+    @Mock
+    private AccessValidationService accessValidationService;
 
     @InjectMocks
     private ClientServiceImpl clientService;
@@ -106,7 +110,6 @@ public class ClientServiceImplTest {
         orderRequestDto.setDistanceCategory(DistanceCategory.MEDIUM);
         orderRequestDto.setPaymentMethod(PaymentMethod.CASH);
         orderRequestDto.setPickupTime(LocalDateTime.now().plusHours(2));
-
         orderDetailsDto = new OrderDetailsDto();
         orderDetailsDto.setId(1L);
         orderDetailsDto.setFromAddress("From Address");
@@ -125,7 +128,6 @@ public class ClientServiceImplTest {
 
         orderStatusHistoryDto = new OrderStatusHistoryDto();
         orderStatusHistoryDto.setId(1L);
-        orderStatusHistoryDto.setId(1L);
         orderStatusHistoryDto.setToStatus(OrderStatus.CREATED);
         orderStatusHistoryDto.setChangedAt(LocalDateTime.now());
     }
@@ -134,7 +136,7 @@ public class ClientServiceImplTest {
     void createOrder_ShouldCreateOrderSuccessfully() {
         BigDecimal calculatedPrice = new BigDecimal("100.00");
 
-        when(userRepository.findUserByEmail(clientEmail)).thenReturn(Optional.of(client));
+        when(userLookupService.findUserByEmail(clientEmail)).thenReturn(client);
         when(orderMapper.toEntity(orderRequestDto)).thenReturn(order);
         when(priceCalculatorService.calculatePrice(orderRequestDto.getWeightKg(), orderRequestDto.getDistanceCategory()))
                 .thenReturn(calculatedPrice);
@@ -148,24 +150,12 @@ public class ClientServiceImplTest {
         assertEquals(orderDetailsDto.getFromAddress(), result.getFromAddress());
         assertEquals(orderDetailsDto.getPrice(), result.getPrice());
 
-        verify(userRepository).findUserByEmail(clientEmail);
+        verify(userLookupService).findUserByEmail(clientEmail);
         verify(orderMapper).toEntity(orderRequestDto);
         verify(priceCalculatorService).calculatePrice(orderRequestDto.getWeightKg(), orderRequestDto.getDistanceCategory());
         verify(orderRepository).save(any(Order.class));
         verify(orderMapper).toDetailsDto(order);
         verify(eventPublisher).publishEvent(any(OrderCreatedEvent.class));
-    }
-
-    @Test
-    void createOrder_ShouldThrowException_WhenUserNotFound() {
-        when(userRepository.findUserByEmail(clientEmail)).thenReturn(Optional.empty());
-
-        UserWithEmailNotFoundException exception = assertThrows(UserWithEmailNotFoundException.class,
-                () -> clientService.createOrder(orderRequestDto, clientEmail));
-
-        assertEquals("User with email: " + clientEmail + " not found", exception.getMessage());
-        verify(userRepository).findUserByEmail(clientEmail);
-        verifyNoInteractions(orderMapper, priceCalculatorService, orderRepository, eventPublisher);
     }
 
     @Test
@@ -191,7 +181,8 @@ public class ClientServiceImplTest {
     void getOrderDetails_ShouldReturnOrderDetails_WhenOrderExistsAndEmailMatches() {
         Long orderId = 1L;
 
-        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderLookupService.findOrderById(orderId)).thenReturn(order);
+        doNothing().when(accessValidationService).validateOrderAccess(order, clientEmail);
         when(orderMapper.toDetailsDto(order)).thenReturn(orderDetailsDto);
 
         OrderDetailsDto result = clientService.getOrderDetails(orderId, clientEmail);
@@ -200,39 +191,10 @@ public class ClientServiceImplTest {
         assertEquals(orderDetailsDto.getId(), result.getId());
         assertEquals(orderDetailsDto.getFromAddress(), result.getFromAddress());
 
-        verify(orderRepository).findById(orderId);
+        verify(orderLookupService).findOrderById(orderId);
+        verify(accessValidationService).validateOrderAccess(order, clientEmail);
         verify(orderMapper).toDetailsDto(order);
     }
-
-    @Test
-    void getOrderDetails_ShouldThrowException_WhenOrderNotFound() {
-        Long orderId = 1L;
-
-        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> clientService.getOrderDetails(orderId, clientEmail));
-
-        assertEquals("Order with id: " + orderId + " not found", exception.getMessage());
-        verify(orderRepository).findById(orderId);
-        verifyNoInteractions(orderMapper);
-    }
-
-    @Test
-    void getOrderDetails_ShouldThrowException_WhenEmailDoesNotMatch() {
-        Long orderId = 1L;
-        String wrongEmail = "wrong@example.com";
-
-        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> clientService.getOrderDetails(orderId, wrongEmail));
-
-        assertEquals("Access denied to this order", exception.getMessage());
-        verify(orderRepository).findById(orderId);
-        verifyNoInteractions(orderMapper);
-    }
-
     @Test
     void getOrdersAvailableForRating_ShouldReturnEligibleOrders() {
         List<Order> orders = List.of(order);
@@ -256,7 +218,8 @@ public class ClientServiceImplTest {
         Long orderId = 1L;
         List<OrderStatusHistoryDto> historyDtos = List.of(orderStatusHistoryDto);
 
-        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(orderLookupService.findOrderById(orderId)).thenReturn(order);
+        doNothing().when(accessValidationService).validateOrderAccess(order, clientEmail);
         when(orderStatusHistoryService.getOrderHistory(orderId)).thenReturn(List.of());
         when(orderStatusHistoryMapper.toDtoList(any())).thenReturn(historyDtos);
 
@@ -266,39 +229,9 @@ public class ClientServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(orderStatusHistoryDto.getId(), result.get(0).getId());
 
-        verify(orderRepository).findById(orderId);
+        verify(orderLookupService).findOrderById(orderId);
+        verify(accessValidationService).validateOrderAccess(order, clientEmail);
         verify(orderStatusHistoryService).getOrderHistory(orderId);
         verify(orderStatusHistoryMapper).toDtoList(any());
     }
-
-    @Test
-    void getOrderStatusHistory_ShouldThrowException_WhenOrderNotFound() {
-        Long orderId = 1L;
-
-        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> clientService.getOrderStatusHistory(orderId, clientEmail));
-
-        assertEquals("Order with id: " + orderId + " not found", exception.getMessage());
-        verify(orderRepository).findById(orderId);
-        verifyNoInteractions(orderStatusHistoryService, orderStatusHistoryMapper);
-    }
-
-    @Test
-    void getOrderStatusHistory_ShouldThrowException_WhenEmailDoesNotMatch() {
-        Long orderId = 1L;
-        String wrongEmail = "wrong@example.com";
-
-        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
-
-        OrderNotFoundException exception = assertThrows(OrderNotFoundException.class,
-                () -> clientService.getOrderStatusHistory(orderId, wrongEmail));
-
-        assertEquals("Order with id: " + orderId + " not found", exception.getMessage());
-        verify(orderRepository).findById(orderId);
-        verifyNoInteractions(orderStatusHistoryService, orderStatusHistoryMapper);
-    }
-
-
 }

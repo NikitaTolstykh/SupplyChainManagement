@@ -5,15 +5,15 @@ import com.delivery.dto.DriverOrderListItemDto;
 import com.delivery.entity.Order;
 import com.delivery.entity.User;
 import com.delivery.event.OrderStatusChangedEvent;
-import com.delivery.exception.OrderNotFoundException;
-import com.delivery.exception.UserWithEmailNotFoundException;
 import com.delivery.mapper.DispatcherMapper;
 import com.delivery.mapper.DriverMapper;
 import com.delivery.repository.OrderRepository;
-import com.delivery.repository.UserRepository;
 import com.delivery.service.impl.DriverServiceImpl;
 import com.delivery.service.interfaces.OrderStatusHistoryService;
 import com.delivery.util.OrderStatus;
+import com.delivery.util.lookup.OrderLookupService;
+import com.delivery.util.lookup.UserLookupService;
+import com.delivery.util.validation.AccessValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,22 +25,17 @@ import org.springframework.context.ApplicationEventPublisher;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class DriverServiceImplTest {
 
     @Mock
     private OrderRepository orderRepository;
-
-    @Mock
-    private UserRepository userRepository;
 
     @Mock
     private DriverMapper driverMapper;
@@ -53,6 +48,15 @@ public class DriverServiceImplTest {
 
     @Mock
     private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private UserLookupService userLookupService;
+
+    @Mock
+    private OrderLookupService orderLookupService;
+
+    @Mock
+    private AccessValidationService accessValidationService;
 
     @InjectMocks
     private DriverServiceImpl driverService;
@@ -87,7 +91,7 @@ public class DriverServiceImplTest {
 
     @Test
     void getAssignedOrders_ShouldReturnMappedOrders() {
-        when(userRepository.findUserByEmail("driver@example.com")).thenReturn(Optional.of(driver));
+        when(userLookupService.findUserByEmail("driver@example.com")).thenReturn(driver);
         when(orderRepository.findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.ASSIGNED)).thenReturn(List.of(order));
         when(driverMapper.toListDriverOrders(List.of(order))).thenReturn(List.of(driverDto));
 
@@ -95,40 +99,56 @@ public class DriverServiceImplTest {
 
         assertEquals(1, result.size());
         assertEquals(driverDto.getId(), result.get(0).getId());
+
+        verify(userLookupService).findUserByEmail("driver@example.com");
+        verify(orderRepository).findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.ASSIGNED);
+        verify(driverMapper).toListDriverOrders(List.of(order));
     }
 
     @Test
     void getCompletedOrders_ShouldReturnMappedOrders() {
-        when(userRepository.findUserByEmail("driver@example.com")).thenReturn(Optional.of(driver));
+        when(userLookupService.findUserByEmail("driver@example.com")).thenReturn(driver);
         when(orderRepository.findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.DELIVERED)).thenReturn(List.of(order));
         when(driverMapper.toListDriverOrders(List.of(order))).thenReturn(List.of(driverDto));
-
         List<DriverOrderListItemDto> result = driverService.getCompletedOrders("driver@example.com");
 
         assertEquals(1, result.size());
         assertEquals(driverDto.getId(), result.get(0).getId());
+
+        verify(userLookupService).findUserByEmail("driver@example.com");
+        verify(orderRepository).findAllByDriver_IdAndStatus(driver.getId(), OrderStatus.DELIVERED);
+        verify(driverMapper).toListDriverOrders(List.of(order));
     }
 
     @Test
     void getOrderDetails_ShouldReturnOrderDetailsDto() {
-        when(orderRepository.findById(10L)).thenReturn(Optional.of(order));
+        when(orderLookupService.findOrderById(10L)).thenReturn(order);
+        doNothing().when(accessValidationService).validateDriverAccess(order, "driver@example.com");
         when(dispatcherMapper.toDispatcherOrderDetailsDto(order)).thenReturn(detailsDto);
 
         DispatcherOrderDetailsDto result = driverService.getOrderDetails(10L, "driver@example.com");
 
         assertEquals(detailsDto.getId(), result.getId());
+
+        verify(orderLookupService).findOrderById(10L);
+        verify(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        verify(dispatcherMapper).toDispatcherOrderDetailsDto(order);
     }
 
     @Test
     void acceptOrder_ShouldUpdateStatusToInProgress() {
         order.setStatus(OrderStatus.ASSIGNED);
-        when(orderRepository.findById(10L)).thenReturn(Optional.of(order));
-        when(userRepository.findUserByEmail("driver@example.com")).thenReturn(Optional.of(driver));
+        when(orderLookupService.findOrderById(10L)).thenReturn(order);
+        doNothing().when(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        when(userLookupService.findUserByEmail("driver@example.com")).thenReturn(driver);
         when(orderRepository.save(order)).thenReturn(order);
 
         driverService.acceptOrder(10L, "driver@example.com");
 
         assertEquals(OrderStatus.IN_PROGRESS, order.getStatus());
+        verify(orderLookupService).findOrderById(10L);
+        verify(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        verify(userLookupService).findUserByEmail("driver@example.com");
         verify(orderStatusHistoryService).logStatusChange(order, OrderStatus.ASSIGNED, OrderStatus.IN_PROGRESS, driver);
         verify(eventPublisher).publishEvent(any(OrderStatusChangedEvent.class));
     }
@@ -136,50 +156,47 @@ public class DriverServiceImplTest {
     @Test
     void completeOrder_ShouldUpdateStatusToDelivered() {
         order.setStatus(OrderStatus.IN_PROGRESS);
-        when(orderRepository.findById(10L)).thenReturn(Optional.of(order));
-        when(userRepository.findUserByEmail("driver@example.com")).thenReturn(Optional.of(driver));
+        when(orderLookupService.findOrderById(10L)).thenReturn(order);
+        doNothing().when(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        when(userLookupService.findUserByEmail("driver@example.com")).thenReturn(driver);
         when(orderRepository.save(order)).thenReturn(order);
 
         driverService.completeOrder(10L, "driver@example.com");
 
         assertEquals(OrderStatus.DELIVERED, order.getStatus());
+        verify(orderLookupService).findOrderById(10L);
+        verify(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        verify(userLookupService).findUserByEmail("driver@example.com");
         verify(orderStatusHistoryService).logStatusChange(order, OrderStatus.IN_PROGRESS, OrderStatus.DELIVERED, driver);
         verify(eventPublisher).publishEvent(any(OrderStatusChangedEvent.class));
     }
 
     @Test
-    void getAssignedOrders_ShouldThrowException_WhenUserNotFound() {
-        when(userRepository.findUserByEmail("notfound@example.com")).thenReturn(Optional.empty());
-
-        assertThrows(UserWithEmailNotFoundException.class,
-                () -> driverService.getAssignedOrders("notfound@example.com"));
-    }
-
-    @Test
-    void getOrderDetails_ShouldThrowException_WhenOrderNotFound() {
-        when(orderRepository.findById(999L)).thenReturn(Optional.empty());
-
-        assertThrows(OrderNotFoundException.class,
-                () -> driverService.getOrderDetails(999L, "driver@example.com"));
-    }
-
-    @Test
     void acceptOrder_ShouldThrowException_WhenOrderNotAssigned() {
         order.setStatus(OrderStatus.IN_PROGRESS);
-        when(orderRepository.findById(10L)).thenReturn(Optional.of(order));
-        when(userRepository.findUserByEmail("driver@example.com")).thenReturn(Optional.of(driver));
+        when(orderLookupService.findOrderById(10L)).thenReturn(order);
+        doNothing().when(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        when(userLookupService.findUserByEmail("driver@example.com")).thenReturn(driver);
 
         assertThrows(IllegalStateException.class,
                 () -> driverService.acceptOrder(10L, "driver@example.com"));
-    }
 
+        verify(orderLookupService).findOrderById(10L);
+        verify(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        verify(userLookupService).findUserByEmail("driver@example.com");
+    }
     @Test
     void completeOrder_ShouldThrowException_WhenOrderNotInProgress() {
         order.setStatus(OrderStatus.ASSIGNED);
-        when(orderRepository.findById(10L)).thenReturn(Optional.of(order));
-        when(userRepository.findUserByEmail("driver@example.com")).thenReturn(Optional.of(driver));
+        when(orderLookupService.findOrderById(10L)).thenReturn(order);
+        doNothing().when(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        when(userLookupService.findUserByEmail("driver@example.com")).thenReturn(driver);
 
         assertThrows(IllegalArgumentException.class,
                 () -> driverService.completeOrder(10L, "driver@example.com"));
+
+        verify(orderLookupService).findOrderById(10L);
+        verify(accessValidationService).validateDriverAccess(order, "driver@example.com");
+        verify(userLookupService).findUserByEmail("driver@example.com");
     }
 }
