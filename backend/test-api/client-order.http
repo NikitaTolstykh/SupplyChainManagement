@@ -1,7 +1,6 @@
 ### GET all orders
 GET http://localhost:8080/api/client/orders
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTIxNzgxOTcsImV4cCI6MTc1MjI2NDU5N30.Ge0kGl9FftFlEqyPKPRSurRazHGXGpf3hHrlvHtUUEI
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTMzNTkyMzYsImV4cCI6MTc1MzQ0NTYzNn0.k9zAWuvx-LjCrU7MHKEbE22ELoK61LSydfJo_B8EuQQ
 ### GET order details
 GET http://localhost:8080/api/client/orders/10
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTIxNzgxOTcsImV4cCI6MTc1MjI2NDU5N30.Ge0kGl9FftFlEqyPKPRSurRazHGXGpf3hHrlvHtUUEI
@@ -29,12 +28,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpb
 
 
 ### POST rate order
-POST http://localhost:8080/api/client/orders/10/rating
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTIxNzgxOTcsImV4cCI6MTc1MjI2NDU5N30.Ge0kGl9FftFlEqyPKPRSurRazHGXGpf3hHrlvHtUUEI
+POST http://localhost:8080/api/client/orders/17/rating
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTMzNTkyMzYsImV4cCI6MTc1MzQ0NTYzNn0.k9zAWuvx-LjCrU7MHKEbE22ELoK61LSydfJo_B8EuQQ
 Content-Type: application/json
 
 {
-"stars": 5,
+"stars": 2,
   "comment": "Bardzo dobrze, grzeczny kierowca i extra serwis"
 }
 
@@ -45,4 +44,4 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpb
 
 ###GET client statistics
 GET http://localhost:8080/api/client/orders/statistics
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTIxNzgxOTcsImV4cCI6MTc1MjI2NDU5N30.Ge0kGl9FftFlEqyPKPRSurRazHGXGpf3hHrlvHtUUEI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpdGF0b2xzdHloN0BnbWFpbC5jb20iLCJpYXQiOjE3NTMzNTkyMzYsImV4cCI6MTc1MzQ0NTYzNn0.k9zAWuvx-LjCrU7MHKEbE22ELoK61LSydfJo_B8EuQQ
