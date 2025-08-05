@@ -1,7 +1,6 @@
-import {useMutation} from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import API from '../../lib/api/axios';
-import {useAuthStore} from '../../store/authStore';
-import type {Role} from "../../lib/types/Role.ts";
+import { useAuthStore } from '../../store/authStore';
 
 interface RegisterPayload {
     email: string;
@@ -9,22 +8,21 @@ interface RegisterPayload {
     firstName: string;
     lastName: string;
     phone: string;
-    role: Role
 }
 
 interface AuthResponse {
     token: string;
+    type: string; // "Bearer"
 }
 
 export const useRegister = () => {
-    const setToken = useAuthStore(state => state.setToken);
+    const setToken = useAuthStore((state) => state.setToken);
 
-    return useMutation<AuthResponse, Error, RegisterPayload>(
-        (userData) => API.post('/auth/register', userData).then(res => res.data),
-        {
-            onSuccess: (data) => {
-                setToken(data.token);
-            },
-        }
-    );
+    return useMutation({
+        mutationFn: (userData: RegisterPayload) =>
+            API.post('/auth/register', { ...userData, role: 'CLIENT' }).then((res) => res.data),
+        onSuccess: (data: AuthResponse) => {
+            setToken(data.token);
+        },
+    });
 };
