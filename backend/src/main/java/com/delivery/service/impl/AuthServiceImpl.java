@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
 
         userDto.setPassword(passwordService.encodePassword(userDto.getPassword()));
         User savedUser = userRepository.save(userMapper.userToEntity(userDto));
-        String token = jwtUtil.generateToken(savedUser.getEmail());
+        String token = jwtUtil.generateToken(savedUser.getEmail(), savedUser.getRole().toString());
 
         return new AuthResponse(token, "Bearer");
     }
@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordService.matches(password, user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
 
         return new AuthResponse(token, "Bearer");
     }
