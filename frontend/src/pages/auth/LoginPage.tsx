@@ -1,13 +1,27 @@
 import React, { useState } from 'react';
 import Button from '../../components/ui/Button';
+import { useLogin} from "../../hooks/auth/useLogin.ts";
+import { useNavigate } from 'react-router-dom'
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const loginMutation = useLogin();
+    const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        alert(`Login with email: ${email}, password: ${password}`);
+        loginMutation.mutate(
+            { email, password },
+            {
+                onSuccess: () => {
+                    navigate('/');
+                },
+                onError: (error) => {
+                    alert(error.message);
+                },
+            }
+        );
     };
 
     return (
@@ -42,8 +56,8 @@ const LoginPage: React.FC = () => {
                     required
                 />
 
-                <Button type="submit" variant="primary" className="w-full py-3">
-                    Login
+                <Button type="submit" variant="primary" className="w-full py-3" disabled={loginMutation.isPending}>
+                    {loginMutation.isPending ? 'Logging in...' : 'Login'}
                 </Button>
 
                 <p className="mt-6 text-center">
@@ -58,4 +72,3 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
-
