@@ -1,21 +1,35 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Button from '../../components/ui/Button';
-import { useLogin} from "../../hooks/auth/useLogin.ts";
-import { useNavigate } from 'react-router-dom'
+import {useLogin} from "../../hooks/auth/useLogin.ts";
+import {useNavigate} from 'react-router-dom'
+import {useAuthStore} from "../../store/authStore.ts";
+import {Role} from "../../lib/types/Role.ts";
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const loginMutation = useLogin();
     const navigate = useNavigate();
+    const setToken = useAuthStore(state => state.setToken);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         loginMutation.mutate(
             { email, password },
             {
-                onSuccess: () => {
-                    navigate('/');
+                onSuccess: (data) => {
+                    const token = data.token;
+                    setToken(token);
+
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const role: Role = payload.role;
+
+
+                    if (role === Role.ADMIN) {
+                        navigate('/admin');
+                    } else {
+                        navigate('/');
+                    }
                 },
                 onError: (error) => {
                     alert(error.message);

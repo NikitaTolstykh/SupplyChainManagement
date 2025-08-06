@@ -32,7 +32,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 };
                 set({ token, user, isAuthenticated: true });
             } else {
-                // Токен невалидный или истек
                 get().logout();
             }
         } else {
