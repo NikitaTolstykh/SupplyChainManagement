@@ -27,3 +27,11 @@ export interface VehicleDto {
     comment?: string;
     driverId: number;
 }
+export interface VehicleFormDto {
+    brand: string;
+    model: string;
+    color: string;
+    licensePlate: string;
+    comment?: string;
+    driverId: number;
+}
