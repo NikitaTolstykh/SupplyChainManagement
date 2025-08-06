@@ -1,5 +1,5 @@
 import API from "./axios.ts";
-import {UserRequestDto, UserResponseDto, VehicleDto} from "../types/AdminDtos.ts";
+import type {UserRequestDto, UserResponseDto, VehicleDto} from "../types/AdminDtos.ts";
 
 //WORKERS
 
@@ -9,8 +9,14 @@ export const addWorker = (worker: UserRequestDto) => API.post<UserResponseDto>('
 
 export const editWorker = (id: number, worker: UserRequestDto) => API.put<UserResponseDto>(`/admin/workers/${id}`, worker).then(res => res.data);
 
-export const deleteWorker = (id: number) => API.delete(`/admin/workers/${id}`);
+export const deleteWorker = (id: number): Promise<void> =>
+    API.delete(`/admin/workers/${id}`).then(() => {});
 
+export const fetchWorkersByRole = (role: string) =>
+    API.get<UserResponseDto[]>(`/admin/workers/role/${role}`).then(res => res.data);
+
+export const searchWorkers = (query: string) =>
+    API.get<UserResponseDto[]>(`/admin/workers/search?query=${encodeURIComponent(query)}`).then(res => res.data);
 // VEHICLES
 
 export const fetchVehicles = () => API.get<VehicleDto[]>('/admin/vehicles').then(res => res.data);
