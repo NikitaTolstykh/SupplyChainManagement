@@ -25,4 +25,5 @@ export const addVehicle = (vehicle: VehicleDto) => API.post<VehicleDto>('/admin/
 
 export const editVehicle = (id: number, vehicle: VehicleDto) => API.put<VehicleDto>(`/admin/vehicles/${id}`, vehicle).then(res => res.data);
 
-export const deleteVehicle = (id: number) => API.delete(`/admin/vehicles/${id}`);
+export const deleteVehicle = (id: number): Promise<void> =>
+    API.delete(`/admin/vehicles/${id}`).then(() => {});
