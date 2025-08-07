@@ -61,6 +61,7 @@ public class AuthServiceImplTest {
         user = new User();
         user.setEmail("test@example.com");
         user.setPassword("encodedPassword");
+        user.setRole(Role.CLIENT);
     }
 
     @Test
@@ -68,15 +69,15 @@ public class AuthServiceImplTest {
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.empty());
         doNothing().when(roleValidator).validateRegistrationRole(Role.CLIENT);
         when(passwordService.encodePassword("password123")).thenReturn("encodedPassword");
-
         when(userMapper.userToEntity(any(UserRequestDto.class))).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(jwtUtil.generateToken("test@example.com")).thenReturn("jwt-token");
+        when(jwtUtil.generateToken("test@example.com", user.getRole().toString())).thenReturn("jwt-token");
 
         AuthResponse response = authService.register(userDto);
 
         assertEquals("jwt-token", response.getToken());
         assertEquals("Bearer", response.getType());
+        assertEquals("CLIENT", response.getRole());
     }
 
     @Test
@@ -93,12 +94,13 @@ public class AuthServiceImplTest {
     void login_ShouldReturnToken_WhenCredentialsAreValid() {
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(passwordService.matches("password123", "encodedPassword")).thenReturn(true);
-        when(jwtUtil.generateToken("test@example.com")).thenReturn("jwt-token");
+        when(jwtUtil.generateToken("test@example.com", user.getRole().toString())).thenReturn("jwt-token");
 
         AuthResponse response = authService.login("test@example.com", "password123");
 
         assertEquals("jwt-token", response.getToken());
         assertEquals("Bearer", response.getType());
+        assertEquals("CLIENT", response.getRole());
     }
 
     @Test
@@ -113,6 +115,7 @@ public class AuthServiceImplTest {
     void login_ShouldThrowException_WhenPasswordIsWrong() {
         when(userRepository.findUserByEmail("test@example.com")).thenReturn(Optional.of(user));
         when(passwordService.matches("wrongPassword", "encodedPassword")).thenReturn(false);
+
         assertThrows(RuntimeException.class,
                 () -> authService.login("test@example.com", "wrongPassword"));
     }

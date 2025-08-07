@@ -3,7 +3,8 @@ import Modal from "../../../components/ui/Modal.tsx";
 import Input from "../../../components/ui/Input.tsx";
 import Button from "../../../components/ui/Button.tsx";
 import type {UserRequestDto} from "../../../lib/types/AdminDtos.ts";
-import { Role} from "../../../lib/types/Role.ts";
+import {RoleValues} from "../../../lib/types/Role.ts";
+import type {Role} from "../../../lib/types/Role.ts";
 
 interface AddWorkerModalProps {
     isOpen: boolean;
@@ -24,7 +25,7 @@ const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
         lastName: '',
         phone: '',
         password: '',
-        role: Role.DRIVER,
+        role: RoleValues.DRIVER,
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,7 +40,7 @@ const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
                 lastName: '',
                 phone: '',
                 password: '',
-                role: Role.DRIVER,
+                role: RoleValues.DRIVER,
             });
         }
         setErrors({});
@@ -137,8 +138,8 @@ const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
                         onChange={handleChange}
                         className="w-full border rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
                     >
-                        <option value={Role.DRIVER}>Driver</option>
-                        <option value={Role.DISPATCHER}>Dispatcher</option>
+                        <option value={RoleValues.DRIVER}>Driver</option>
+                        <option value={RoleValues.DISPATCHER}>Dispatcher</option>
                     </select>
                 </div>
 

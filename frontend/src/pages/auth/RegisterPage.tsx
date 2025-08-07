@@ -3,7 +3,7 @@ import Button from '../../components/ui/Button';
 import { useRegister } from '../../hooks/auth/useRegister';
 import { useNavigate } from 'react-router-dom';
 import {useAuthStore} from "../../store/authStore.ts";
-import {Role} from "../../lib/types/Role.ts";
+import { RoleValues } from "../../lib/types/Role.ts";
 
 interface RegisterFormData {
     email: string;
@@ -36,13 +36,9 @@ const RegisterPage: React.FC = () => {
         e.preventDefault();
         registerMutation.mutate(formData, {
             onSuccess: (data) => {
-                const token = data.token;
-                setToken(token);
+                setToken(data.token);
 
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                const role: Role = payload.role;
-
-                if (role === Role.ADMIN) {
+                if (data.role === RoleValues.ADMIN) {
                     navigate('/admin');
                 } else {
                     navigate('/');

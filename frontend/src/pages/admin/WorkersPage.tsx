@@ -6,7 +6,7 @@ import Button from "../../components/ui/Button.tsx";
 import Input from "../../components/ui/Input.tsx";
 import Toast from "../../components/ui/Toast.tsx";
 import type {UserResponseDto, UserRequestDto} from "../../lib/types/AdminDtos.ts";
-import { Role } from '../../lib/types/Role';
+import {type Role, RoleValues} from '../../lib/types/Role';
 
 const WorkersPage: React.FC = () => {
     const { workersQuery, addWorkerMutation, editWorkerMutation, deleteWorkerMutation } = useWorkers();
@@ -130,8 +130,8 @@ const WorkersPage: React.FC = () => {
                             className="w-full border rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300"
                         >
                             <option value="">All Roles</option>
-                            <option value={Role.DRIVER}>Driver</option>
-                            <option value={Role.DISPATCHER}>Dispatcher</option>
+                            <option value={RoleValues.DRIVER}>Driver</option>
+                            <option value={RoleValues.DISPATCHER}>Dispatcher</option>
                         </select>
                     </div>
                 </div>
@@ -153,7 +153,7 @@ const WorkersPage: React.FC = () => {
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="text-3xl font-bold text-green-600">
-                            {workersQuery.data?.filter(w => w.role === Role.DRIVER).length || 0}
+                            {workersQuery.data?.filter(w => w.role === RoleValues.DRIVER).length || 0}
                         </div>
                         <div className="ml-4">
                             <div className="text-sm font-medium text-gray-500">Drivers</div>
@@ -164,7 +164,7 @@ const WorkersPage: React.FC = () => {
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="text-3xl font-bold text-purple-600">
-                            {workersQuery.data?.filter(w => w.role === Role.DISPATCHER).length || 0}
+                            {workersQuery.data?.filter(w => w.role === RoleValues.DISPATCHER).length || 0}
                         </div>
                         <div className="ml-4">
                             <div className="text-sm font-medium text-gray-500">Dispatchers</div>
