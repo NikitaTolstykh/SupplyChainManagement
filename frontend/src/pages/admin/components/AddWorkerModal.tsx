@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import Modal from "../../../components/ui/Modal.tsx";
-import Input from "../../../components/ui/Input.tsx";
-import Button from "../../../components/ui/Button.tsx";
-import type {UserRequestDto} from "../../../lib/types/AdminDtos.ts";
-import {RoleValues} from "../../../lib/types/Role.ts";
-import type {Role} from "../../../lib/types/Role.ts";
+import Modal from "../../../components/ui/Modal";
+import Input from "../../../components/ui/Input";
+import Button from "../../../components/ui/Button";
+import type { UserRequestDto } from "../../../lib/types/AdminDtos";
+import { RoleValues } from "../../../lib/types/Role";
+import type { Role } from "../../../lib/types/Role";
 
 interface AddWorkerModalProps {
     isOpen: boolean;
@@ -13,12 +13,7 @@ interface AddWorkerModalProps {
     initialData?: UserRequestDto | null;
 }
 
-const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
-                                                           isOpen,
-                                                           onClose,
-                                                           onSubmit,
-                                                           initialData
-                                                       }) => {
+const AddWorkerModal: React.FC<AddWorkerModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
     const [form, setForm] = useState<UserRequestDto>({
         email: '',
         firstName: '',
@@ -32,7 +27,7 @@ const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
 
     useEffect(() => {
         if (initialData) {
-            setForm({ ...initialData });
+            setForm({ ...initialData, password: '' });
         } else {
             setForm({
                 email: '',
@@ -50,31 +45,22 @@ const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
         const { name, value } = e.target;
         setForm(prev => ({
             ...prev,
-            [name]: name === 'role' ? value as Role : value
+            [name]: name === 'role' ? (value as Role) : value
         }));
-
-        // Clear error when user starts typing
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const validate = () => {
         const newErrors: Record<string, string> = {};
-
         if (!form.email) newErrors.email = 'Email is required';
-        if (!form.email.includes('@')) newErrors.email = 'Please enter a valid email';
+        if (form.email && !form.email.includes('@')) newErrors.email = 'Please enter a valid email';
 
         if (!form.firstName) newErrors.firstName = 'First name is required';
         if (!form.lastName) newErrors.lastName = 'Last name is required';
         if (!form.phone) newErrors.phone = 'Phone is required';
 
-        if (!initialData && !form.password) {
-            newErrors.password = 'Password is required';
-        }
-        if (form.password && form.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
+        if (!form.password) newErrors.password = 'Password is required';
+        if (form.password && form.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -91,44 +77,14 @@ const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
     };
 
     return (
-        <Modal
-            isOpen={isOpen}
-            onClose={handleClose}
-            title={initialData ? 'Edit Worker' : 'Add Worker'}
-        >
+        <Modal isOpen={isOpen} onClose={handleClose} title={initialData ? 'Edit Worker' : 'Add Worker'}>
             <div className="space-y-4">
-                <Input
-                    label="Email"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    error={errors.email}
-                />
+                <Input label="Email" name="email" type="email" value={form.email} onChange={handleChange} error={errors.email} />
+                <Input label="First Name" name="firstName" value={form.firstName} onChange={handleChange} error={errors.firstName} />
 
-                <Input
-                    label="First Name"
-                    name="firstName"
-                    value={form.firstName}
-                    onChange={handleChange}
-                    error={errors.firstName}
-                />
+                <Input label="Last Name" name="lastName" value={form.lastName} onChange={handleChange} error={errors.lastName} />
 
-                <Input
-                    label="Last Name"
-                    name="lastName"
-                    value={form.lastName}
-                    onChange={handleChange}
-                    error={errors.lastName}
-                />
-
-                <Input
-                    label="Phone"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    error={errors.phone}
-                />
+                <Input label="Phone" name="phone" value={form.phone} onChange={handleChange} error={errors.phone} />
 
                 <div className="mb-4">
                     <label className="block text-gray-700 mb-1">Role</label>
@@ -143,21 +99,17 @@ const AddWorkerModal: React.FC<AddWorkerModalProps> = ({
                     </select>
                 </div>
 
-                {!initialData && (
-                    <Input
-                        label="Password"
-                        name="password"
-                        type="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        error={errors.password}
-                    />
-                )}
+                <Input
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    error={errors.password}
+                />
 
                 <div className="flex justify-end gap-2 mt-6">
-                    <Button variant="secondary" onClick={handleClose}>
-                        Cancel
-                    </Button>
+                    <Button variant="secondary" onClick={handleClose}>Cancel</Button>
                     <Button variant="primary" onClick={handleSubmit}>
                         {initialData ? 'Save Changes' : 'Add Worker'}
                     </Button>
