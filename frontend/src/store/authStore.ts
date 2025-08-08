@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { decodeToken, isTokenExpired } from "../lib/utils/jwt";
-import { Role } from "../lib/types/Role";
+import type {Role} from "../lib/types/Role.ts";
 
 interface User {
     email: string;
@@ -26,13 +26,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             const decoded = decodeToken(token);
             if (decoded && !isTokenExpired(token)) {
                 localStorage.setItem('token', token);
+
+                console.log('Decoded token:', decoded); // Для отладки
+
                 const user: User = {
                     email: decoded.sub,
-                    role: decoded.role as Role || Role.CLIENT
+                    role: decoded.role as Role
                 };
+
+                console.log('Setting user:', user); // Для отладки
+
                 set({ token, user, isAuthenticated: true });
             } else {
-                // Токен невалидный или истек
                 get().logout();
             }
         } else {

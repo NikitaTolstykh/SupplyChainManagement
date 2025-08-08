@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Button from '../../components/ui/Button';
 import { useRegister } from '../../hooks/auth/useRegister';
 import { useNavigate } from 'react-router-dom';
+import {useAuthStore} from "../../store/authStore.ts";
+import { RoleValues } from "../../lib/types/Role.ts";
 
 interface RegisterFormData {
     email: string;
@@ -10,6 +12,7 @@ interface RegisterFormData {
     lastName: string;
     phone: string;
 }
+
 
 const RegisterPage: React.FC = () => {
     const [formData, setFormData] = useState<RegisterFormData>({
@@ -22,19 +25,29 @@ const RegisterPage: React.FC = () => {
 
     const registerMutation = useRegister();
     const navigate = useNavigate();
+    const setToken = useAuthStore(state => state.setToken);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         registerMutation.mutate(formData, {
-            onSuccess: () => navigate('/'),
+            onSuccess: (data) => {
+                setToken(data.token);
+
+                if (data.role === RoleValues.ADMIN) {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
+            },
             onError: (error) => alert(error.message),
         });
     };
+
 
     const fields: (keyof RegisterFormData)[] = ['firstName', 'lastName', 'email', 'phone', 'password'];
 

@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import API from '../../lib/api/axios';
 import { useAuthStore } from '../../store/authStore';
+import type {Role} from "../../lib/types/Role.ts";
 
 interface LoginPayload {
     email: string;
@@ -10,6 +11,7 @@ interface LoginPayload {
 interface AuthResponse {
     token: string;
     type: string; // "Bearer"
+    role: Role;
 }
 
 export const useLogin = () => {

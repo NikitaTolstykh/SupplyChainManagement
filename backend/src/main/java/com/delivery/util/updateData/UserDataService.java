@@ -19,7 +19,6 @@ public class UserDataService {
         user.setEmail(userDto.getEmail());
         user.setPhone(userDto.getPhone());
         user.setRole(userDto.getRole());
-
         passwordService.updatePasswordIfProvided(user, userDto);
     }
 }

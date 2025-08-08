@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
         User savedUser = userRepository.save(userMapper.userToEntity(userDto));
         String token = jwtUtil.generateToken(savedUser.getEmail(), savedUser.getRole().toString());
 
-        return new AuthResponse(token, "Bearer");
+        return new AuthResponse(token, "Bearer", savedUser.getRole().toString());
     }
 
     @Override
@@ -56,6 +56,6 @@ public class AuthServiceImpl implements AuthService {
         }
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString());
 
-        return new AuthResponse(token, "Bearer");
+        return new AuthResponse(token, "Bearer", user.getRole().toString());
     }
 }
