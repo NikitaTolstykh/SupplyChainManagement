@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
-import Button from '../../components/ui/Button';
-import { useLogin } from "../../hooks/auth/useLogin.ts";
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from "../../store/authStore.ts";
-import { RoleValues } from "../../lib/types/Role.ts";
+import React, { useState } from "react";
+import Button from "../../components/ui/Button";
+import { useLogin } from "../../hooks/auth/useLogin";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import { RoleValues } from "../../lib/types/Role";
 
 const LoginPage: React.FC = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
     const loginMutation = useLogin();
     const navigate = useNavigate();
-    const setToken = useAuthStore(state => state.setToken);
+    const setToken = useAuthStore((state) => state.setToken);
+    const setUser = useAuthStore((state) => state.setUser);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
+        setError("");
 
         loginMutation.mutate(
             { email, password },
@@ -24,27 +25,28 @@ const LoginPage: React.FC = () => {
                     const token = data.token;
                     const role = data.role;
 
-                    setToken(token);
-
-                    if (!role) {
-                        setError('Invalid response: no role found');
+                    if (!token || !role) {
+                        setError("Invalid response from server.");
                         return;
                     }
 
+                    setToken(token);
+                    setUser({ email, role });
+
                     if (role === RoleValues.ADMIN) {
-                        navigate('/admin', { replace: true });
+                        navigate("/admin", { replace: true });
+                    } else if (role === RoleValues.CLIENT) {
+                        navigate("/client", { replace: true });
                     } else {
-                        navigate('/', { replace: true });
+                        navigate("/", { replace: true });
                     }
                 },
-                onError: (error) => {
-                    setError('Login failed. Please check your credentials.');
-                    console.error(error);
-                }
+                onError: () => {
+                    setError("Login failed. Please check your credentials.");
+                },
             }
         );
     };
-
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
@@ -52,7 +54,9 @@ const LoginPage: React.FC = () => {
                 onSubmit={handleSubmit}
                 className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 w-full"
             >
-                <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Login</h2>
+                <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
+                    Login
+                </h2>
 
                 {error && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-lg">
@@ -67,7 +71,7 @@ const LoginPage: React.FC = () => {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-6"
                     required
                 />
@@ -79,7 +83,7 @@ const LoginPage: React.FC = () => {
                     id="password"
                     type="password"
                     value={password}
-                    onChange={e => setPassword(e.target.value)}
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-8"
                     required
                 />
@@ -90,12 +94,12 @@ const LoginPage: React.FC = () => {
                     className="w-full py-3"
                     disabled={loginMutation.isPending}
                 >
-                    {loginMutation.isPending ? 'Logging in...' : 'Login'}
+                    {loginMutation.isPending ? "Logging in..." : "Login"}
                 </Button>
 
                 <p className="mt-6 text-center">
-                    Don't have an account?{' '}
-                    <a href="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+                    Don't have an account?{" "}
+                    <a href="/register" className="text-blue-600 hover:text-blue-700">
                         Register
                     </a>
                 </p>

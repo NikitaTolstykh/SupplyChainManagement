@@ -2,6 +2,7 @@ import type {DistanceCategory} from "./DistanceCategory.ts";
 import type {PaymentMethod} from "./PaymentMethod.ts";
 import type {OrderStatus} from "./OrderStatus.ts";
 
+
 export interface OrderRequestDto {
     fromAddress: string;
     toAddress: string;
@@ -18,11 +19,13 @@ export interface OrderListItemDto {
     id: number;
     fromAddress: string;
     toAddress: string;
+    cargoType: string;
+    weightKg: number;
+    paymentMethod: PaymentMethod;
     status: OrderStatus;
     price: number;
     createdAt: string;
     pickupTime?: string;
-    paymentMethod: PaymentMethod;
 }
 
 export interface OrderDetailsDto {
@@ -62,6 +65,7 @@ export interface OrderRatingResponseDto {
     comment?: string;
     createdAt: string;
     clientFullName?: string;
+    updatedAt?: string;
 }
 
 export interface ClientStatisticsDto {
