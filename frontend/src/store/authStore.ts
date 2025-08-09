@@ -12,6 +12,7 @@ interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
     setToken: (token: string | null) => void;
+    setUser: (user: User | null) => void; // <--- добавь сюда
     logout: () => void;
     initializeAuth: () => void;
 }
@@ -27,14 +28,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             if (decoded && !isTokenExpired(token)) {
                 localStorage.setItem('token', token);
 
-                console.log('Decoded token:', decoded); // Для отладки
-
                 const user: User = {
                     email: decoded.sub,
-                    role: decoded.role as Role
+                    role: decoded.role as Role,
                 };
-
-                console.log('Setting user:', user); // Для отладки
 
                 set({ token, user, isAuthenticated: true });
             } else {
@@ -44,6 +41,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             localStorage.removeItem('token');
             set({ token: null, user: null, isAuthenticated: false });
         }
+    },
+
+    setUser: (user) => {  // <--- реализуй
+        set({ user });
     },
 
     logout: () => {

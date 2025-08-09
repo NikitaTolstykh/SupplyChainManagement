@@ -1,8 +1,8 @@
 import React from "react";
-import { Outlet, Link, useLocatione} from "react-router-dom";
-import {useAuthStore} from "../../store/authStore.ts";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore.ts";
 import Button from "../../components/ui/Button.tsx";
-import {useClientStats} from "../../hooks/client/useClientStats.ts";
+import { useClientStats } from "../../hooks/client/useClientStats.ts";
 
 const ClientDashboard: React.FC = () => {
     const location = useLocation();
@@ -10,12 +10,17 @@ const ClientDashboard: React.FC = () => {
     const { data: stats, isLoading, isError } = useClientStats();
 
     const navigationItems = [
-        { path: "/client/dashboard", label: "Dashboard", icon: "📊" },
+        { path: "/client", label: "Dashboard", icon: "📊" },
         { path: "/client/orders", label: "Orders", icon: "📦" },
         { path: "/client/create-order", label: "Create Order", icon: "➕" },
     ];
 
-    const isActiveRoute = (path: string) => location.pathname === path;
+    const isActiveRoute = (path: string) => {
+        if (path === "/client") {
+            return location.pathname === "/client" || location.pathname === "/client/";
+        }
+        return location.pathname === path;
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -81,12 +86,16 @@ const ClientDashboard: React.FC = () => {
                                         <span className="font-medium">{stats.totalOrders}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Active Orders:</span>
-                                        <span className="font-medium">{stats.activeOrders}</span>
+                                        <span>Completed:</span>
+                                        <span className="font-medium">{stats.completedOrders}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span>Completed Orders:</span>
-                                        <span className="font-medium">{stats.completedOrders}</span>
+                                        <span>Cancelled:</span>
+                                        <span className="font-medium">{stats.cancelledOrders}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span>Total Spent:</span>
+                                        <span className="font-medium">${stats.totalSpent}</span>
                                     </div>
                                 </div>
                             )}

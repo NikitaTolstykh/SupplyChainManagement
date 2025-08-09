@@ -1,5 +1,5 @@
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import type {OrderRatingRequestDto, OrderRatingResponseDto} from "../../lib/types/ClientDtos.ts";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { OrderRatingRequestDto, OrderRatingResponseDto, OrderListItemDto } from "../../lib/types/ClientDtos.ts";
 import * as clientApi from "../../lib/api/clientService.ts";
 
 export function useRateOrder() {
@@ -9,20 +9,19 @@ export function useRateOrder() {
         OrderRatingResponseDto,
         unknown,
         { orderId: number; rating: OrderRatingRequestDto }
-    >(
-        ({orderId, rating}) => clientApi.rateOrder(orderId, rating),
-        {
-            onSuccess: () => {
-                queryClient.invalidateQueries(["clientOrdersAvailableForRating"]);
-                queryClient.invalidateQueries(["clientStatistics"]);
-            },
-        }
-    );
+    >({
+        mutationFn: ({ orderId, rating }) => clientApi.rateOrder(orderId, rating),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["clientOrdersAvailableForRating"] });
+            queryClient.invalidateQueries({ queryKey: ["clientStatistics"] });
+            queryClient.invalidateQueries({ queryKey: ["clientOrders"] });
+        },
+    });
 }
 
 export function useOrdersAvailableForRating() {
-    return useQuery(
-        ["clientOrdersAvailableForRating"],
-        clientApi.fetchOrdersAvailableForRating
-    );
+    return useQuery<OrderListItemDto[]>({
+        queryKey: ["clientOrdersAvailableForRating"],
+        queryFn: clientApi.fetchOrdersAvailableForRating,
+    });
 }

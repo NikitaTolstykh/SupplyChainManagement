@@ -1,38 +1,77 @@
-import type {Role} from "./Role.ts";
+import type {DistanceCategory} from "./DistanceCategory.ts";
+import type {PaymentMethod} from "./PaymentMethod.ts";
+import type {OrderStatus} from "./OrderStatus.ts";
 
-export interface UserResponseDto {
-    id: number;
-    email: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    role: Role;
-}
-
-export interface UserRequestDto {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    role: Role;
-}
-
-export interface VehicleDto {
-    id: number;
-    brand: string;
-    model: string;
-    color: string;
-    licensePlate: string;
+export interface OrderRequestDto {
+    fromAddress: string;
+    toAddress: string;
+    cargoType: string;
+    cargoDescription?: string;
+    weightKg: number;
     comment?: string;
-    driverId: number;
+    distanceCategory: DistanceCategory;
+    paymentMethod: PaymentMethod;
+    pickupTime: string;
 }
 
-export interface VehicleFormDto {
-    brand: string;
-    model: string;
-    color: string;
-    licensePlate: string;
+export interface OrderListItemDto {
+    id: number;
+    fromAddress: string;
+    toAddress: string;
+    status: OrderStatus;
+    price: number;
+    createdAt: string;
+    pickupTime?: string;
+    paymentMethod: PaymentMethod;
+}
+
+export interface OrderDetailsDto {
+    id: number;
+    fromAddress: string;
+    toAddress: string;
+    cargoType: string;
+    cargoDescription?: string;
+    weightKg: number;
     comment?: string;
-    driverId: number;
+    distanceCategory: DistanceCategory;
+    paymentMethod: PaymentMethod;
+    pickupTime: string;
+    status: OrderStatus;
+    price: number;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface OrderStatusHistoryDto {
+    id: number;
+    fromStatus: OrderStatus;
+    toStatus: OrderStatus;
+    changedBy: string;
+    changedAt: string;
+}
+
+export interface OrderRatingRequestDto {
+    stars: number; // 1-5
+    comment?: string;
+}
+
+export interface OrderRatingResponseDto {
+    id: number;
+    orderId: number;
+    stars: number;
+    comment?: string;
+    createdAt: string;
+    clientFullName?: string;
+}
+
+export interface ClientStatisticsDto {
+    totalOrders: number;
+    completedOrders: number;
+    cancelledOrders: number;
+    totalSpent: number;
+    averageOrderValue: number;
+    ordersByMonth: Record<string, number>;
+    spentByMonth: Record<string, number>;
+    averageRating: number;
+    mostUsedRoute: string | null;
 }

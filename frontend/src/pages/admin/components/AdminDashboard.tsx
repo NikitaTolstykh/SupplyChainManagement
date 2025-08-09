@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
-import Button from "../../components/ui/Button.tsx";
+import { useAuthStore } from '../../../store/authStore.ts';
+import Button from "../../../components/ui/Button.tsx";
 
 const AdminDashboard: React.FC = () => {
     const location = useLocation();
