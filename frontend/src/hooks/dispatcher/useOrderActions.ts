@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { AssignDriverRequestDto, UpdateOrderStatusRequestDto, OrderRequestDto } from '../../lib/types/';
+import * as dispatcherApi from "../../lib/api/dispatcherAPI.ts";
+import type { AssignDriverRequestDto, UpdateOrderStatusRequestDto} from "../../lib/types/DispatcherDtos.ts";
+import type {OrderRequestDto} from "../../lib/types/ClientDtos.ts";
 
 export const useAssignDriver = () => {
     const queryClient = useQueryClient();
