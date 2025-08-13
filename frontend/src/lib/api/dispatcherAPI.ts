@@ -1,16 +1,15 @@
 import API from "./axios.ts";
 
 import type {
-    OrderListItemDto,
     DispatcherOrderDetailsDto,
     OrderStatusHistoryDto,
     AvailableDriverDto,
     OrderRatingResponseDto,
     AssignDriverRequestDto,
     UpdateOrderStatusRequestDto,
-    OrderRequestDto
 } from "../types/DispatcherDtos";
 
+import type {OrderRequestDto, OrderListItemDto} from "../types/ClientDtos.ts"
 // ORDERS
 export const fetchAllOrders = (): Promise<OrderListItemDto[]> =>
     API.get<OrderListItemDto[]>('/dispatcher/orders').then(res => res.data);
