@@ -11,6 +11,9 @@ import CreateOrderPage from "../pages/client/CreateOrderPage.tsx";
 import OrderDetailsPage from "../pages/client/OrderDetailsPage.tsx";
 import RatingPage from "../pages/client/RatingPage.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
+import DispatcherDashboard from "../pages/dispatcher/DispatcherDashboard.tsx";
+import OrdersManagementPage from "../pages/dispatcher/OrdersManagementPage.tsx";
+import RatingsPage from "../pages/dispatcher/RatingsPage.tsx";
 import { RoleValues } from "../lib/types/Role";
 
 const AppRoutes = () => {
@@ -70,6 +73,18 @@ const AppRoutes = () => {
                 <Route path="rating/:orderId" element={<RatingPage />} />
             </Route>
 
+            {/* Dispatcher routes */}
+            <Route
+                path="/dispatcher/*"
+                element={
+                    <ProtectedRoute requiredRole={RoleValues.DISPATCHER}>
+                        <DispatcherDashboard />
+                    </ProtectedRoute>
+                }
+            >
+                <Route index element={<OrdersManagementPage />} />
+                <Route path="ratings" element={<RatingsPage />} />
+            </Route>
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
