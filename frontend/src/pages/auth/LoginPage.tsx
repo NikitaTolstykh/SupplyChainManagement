@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import Button from "../../components/ui/Button";
-import { useLogin } from "../../hooks/auth/useLogin";
-import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/authStore";
-import { RoleValues } from "../../lib/types/Role";
+import {useLogin} from "../../hooks/auth/useLogin";
+import {useNavigate} from "react-router-dom";
+import {useAuthStore} from "../../store/authStore";
+import {RoleValues} from "../../lib/types/Role";
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
         setError("");
 
         loginMutation.mutate(
-            { email, password },
+            {email, password},
             {
                 onSuccess: (data) => {
                     const token = data.token;
@@ -31,14 +31,16 @@ const LoginPage: React.FC = () => {
                     }
 
                     setToken(token);
-                    setUser({ email, role });
+                    setUser({email, role});
 
                     if (role === RoleValues.ADMIN) {
-                        navigate("/admin", { replace: true });
+                        navigate("/admin", {replace: true});
                     } else if (role === RoleValues.CLIENT) {
-                        navigate("/client", { replace: true });
+                        navigate("/client", {replace: true});
+                    } else if (role === RoleValues.DISPATCHER) {
+                        navigate("/dispatcher", {replace: true});
                     } else {
-                        navigate("/", { replace: true });
+                        navigate("/", {replace: true});
                     }
                 },
                 onError: () => {
@@ -49,7 +51,8 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div
+            className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
             <form
                 onSubmit={handleSubmit}
                 className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 w-full"
