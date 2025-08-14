@@ -14,6 +14,9 @@ import ProtectedRoute from "./ProtectedRoute.tsx";
 import DispatcherDashboard from "../pages/dispatcher/DispatcherDashboard.tsx";
 import OrdersManagementPage from "../pages/dispatcher/OrdersManagementPage.tsx";
 import RatingsPage from "../pages/dispatcher/RatingsPage.tsx";
+import DriverDashboard from "../pages/driver/DriverDashboard.tsx";
+import AssignedOrdersPage from "../pages/driver/AssignedOrdersPage.tsx";
+import CompletedOrdersPage from "../pages/driver/CompletedOrdersPage.tsx";
 import { RoleValues } from "../lib/types/Role";
 
 const AppRoutes = () => {
@@ -85,6 +88,20 @@ const AppRoutes = () => {
                 <Route index element={<OrdersManagementPage />} />
                 <Route path="ratings" element={<RatingsPage />} />
             </Route>
+
+            {/* Driver routes */}
+            <Route
+                path="/driver/*"
+                element={
+                    <ProtectedRoute requiredRole={RoleValues.DRIVER}>
+                        <DriverDashboard />
+                    </ProtectedRoute>
+                }
+            >
+                <Route index element={<AssignedOrdersPage />} />
+                <Route path="completed" element={<CompletedOrdersPage />} />
+            </Route>
+
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
