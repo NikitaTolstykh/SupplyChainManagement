@@ -39,6 +39,8 @@ const LoginPage: React.FC = () => {
                         navigate("/client", {replace: true});
                     } else if (role === RoleValues.DISPATCHER) {
                         navigate("/dispatcher", {replace: true});
+                    } else if (role === RoleValues.DRIVER) {
+                        navigate("/driver", {replace: true});
                     } else {
                         navigate("/", {replace: true});
                     }
